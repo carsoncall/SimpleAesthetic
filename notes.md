@@ -1,0 +1,1 @@
+Use the Merge Editor when dealing with merge conflicts. 
