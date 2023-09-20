@@ -1,4 +1,4 @@
-# startup
+# SimpleAesthetic
 
 ### Elevator Pitch ###
 
