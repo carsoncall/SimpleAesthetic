@@ -23,4 +23,5 @@ In our online world, we spend a lot of time pointing our eyes at screens. Why do
     - WebSockets will be used to dynamically load *Aesthetics* to the ***Explore*** tab, and user actions such as voting will be relayed back to the server. 
 
 ### Sketch ###
-See sketch.pdf in repo
+![Alt text](IMG_1509.jpg)
+The image above shows a (very) rough outline of the website. The idea is to keep the website very simple and intuitive. The "Generate" page centers around the image being manipulated, while the "Explore" page shows a random assortment of image/palette combinations. 
