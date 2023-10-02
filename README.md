@@ -25,3 +25,13 @@ In our online world, we spend a lot of time pointing our eyes at screens. Why do
 ### Sketch ###
 ![Alt text](IMG_1509.jpg)
 The image above shows a (very) rough outline of the website. The idea is to keep the website very simple and intuitive. The "Generate" page centers around the image being manipulated, while the "Explore" page shows a random assortment of image/palette combinations. 
+
+### HTML Deliverable ###
+Note that any text on the pages that is enclosed in two asterisks represents a placeholder or note about future functionality. 
+- HTML: I added a page to represent the three main activities: [Creating an aesthetic](index.html), [Browsing existing aesthetics](discover.html), and [Logging In](login.html). 
+- Links: The header of each page includes the title of the page and links to the other pages. 
+- Text: All of the options and helpful user information is included where necessary. 
+- Images: There is currently a placeholder image on the create page. This image will be replaced with the user's uploaded image. There is also a placeholder palette example on the discover page. 
+- Login: the [Login page](login.html) has the necessary input fields and buttons to login and create a new account.
+- Database: The aesthetics shown on the [Discover page](discover.html) are stored and retrieved from the database. 
+- WebSocket: The content on the [Discover page](discover.html) will be dynamically retrieved and sent over WebSocket to the client. 
