@@ -14,14 +14,21 @@
     </header>
     <div>
         <h3>First, pick an image:</h3>
-        <span>
+        <div>
             <input type="file" name="imageLoader">
-        </span>
+        </div>
+        <div>
+            <h3>Image Preview: </h3>
+            <img src="pixel-art-mountain.jpg" width="500">
+            <span>**Note: Image would be the user-given one </span>
+        </div>
     </div>
     <div>
         <h3>Then, either pick 8 colors as a theme, or choose a pre-existing theme:</h3>
         <span>
-            <legend>Popular Themes</legend>
+            <legend>
+                <h5>Popular Themes</h5>
+            </legend>
             <label for="gruvbox">Gruvbox</label>
             <input type="radio" id="gruvbox" name="theme" value="radio1">
             <label for="solarized">Solarized</label>
@@ -30,10 +37,13 @@
             <input type="radio" id="Catpuccin" name="theme" value="radio3">
             <label for="dracula">Dracula</label>
             <input type="radio" id="dracula" name="theme" value="radio4">
-            <label for="custom">Custom</label>
-            <input type="radio" id="custom" name="theme" value="radio5">
+            <label for="custom">Custom: (.csv of hex color codes)</label>
+            <input type="file">
         </span>
         <div id="palette">
+            <div>
+                <h5>Palette: </h5>
+            </div>
             <div
                 style="display: inline-block; height: 1em; width: 1em; border: 1px solid rgb(170, 170, 170); background-color: rgb(40, 40, 40);">
             </div>
@@ -116,6 +126,13 @@
                 style="display: inline-block; height: 1em; width: 1em; border: 1px solid rgb(170, 170, 170); background-color: rgb(211, 134, 155);">
             </div>
         </div>
-
+        <button type="submit">Generate</button>
+        <div>
+            **Note: Data will be uploaded to the server to be processed via WebSocket**
+        </div>
     </div>
 </body>
+<footer>
+    <span>made by Carson Call | </span>
+    <a href="https://github.com/carsoncall/SimpleAesthetic">GitHub Repo</a>
+  </footer>
