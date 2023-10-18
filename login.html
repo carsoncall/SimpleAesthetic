@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="english">
 </html>
-
+<link rel="stylesheet" href="main.css"/>
 <head>
     <title>SimpleAesthetic</title>
 </head>
 <body>
     <header>
-        <h1>SimpleAesthetic</h1>
-        <a href="index.html">Create</a>
-        <a href="discover.html">Discover</a>
+        <div class="header-content">
+            <h1>SimpleAesthetic</h1>
+        </div>
+        <div id="right">
+            <a href="index.html">Create</a>
+            <a href="discover.html">Discover</a>
+        </div>
     </header>
     <div>
         <h3>Login to save your Aesthetics and upload them to the Discovery queue</h3>
-        <label for="username">Username: </label>
-        <input type="text" id="username">
-        <label for="password">Password: </label>
-        <input type="text" id="password">
-        <div>
+        <div id="login-fields">
+            <label for="username">Username: </label>
+            <input type="text" id="username">
+            <label for="password">Password: </label>
+            <input type="text" id="password">
+        </div>
+        <div id="login-buttons">
             <button type="submit">Login</button>
-            <button type=""submit>Create New Account</button>
+            <button type="submit">Create New Account</button>
         </div>
         <div>
             **Note: login information will be sent to the server and stored in the database**. 

@@ -9,11 +9,13 @@
 
 <body>
     <header>
-        <h1>SimpleAesthetic</h1>
-        <div id="right">
-            <a href="login.html">Login</a>
-            <a href="discover.html">Discover</a>
+        <div class="header-content">
+            <h1>SimpleAesthetic</h1>
         </div>
+            <div id="right">
+                <a href="login.html">Login</a>
+                <a href="discover.html">Discover</a>
+            </div>
     </header>
     <div>
         <h3>First, pick an image:</h3>
@@ -28,20 +30,33 @@
     </div>
     <div>
         <h3>Then, either upload a .csv with hex color codes, or choose a pre-existing theme:</h3>
-        <span>
+        <span id="radio-buttons">
             <legend>
                 <h5>Popular Themes</h5>
             </legend>
-            <label for="gruvbox">Gruvbox</label>
-            <input type="radio" id="gruvbox" name="theme" value="radio1">
-            <label for="solarized">Solarized</label>
-            <input type="radio" id="solarized" name="theme" value="radio2">
-            <label for="Catpuccin">Catpuccin</label>
-            <input type="radio" id="Catpuccin" name="theme" value="radio3">
-            <label for="dracula">Dracula</label>
-            <input type="radio" id="dracula" name="theme" value="radio4">
+            <span class="button-wrapper">
+                <input type="radio" id="gruvbox" name="theme" value="radio1">
+                <label for="gruvbox">Gruvbox</label>
+            </span>
+            <span class="button-wrapper">
+                <input type="radio" id="solarized" name="theme" value="radio2">
+                <label for="solarized">Solarized</label>
+            </span>
+            <span class="button-wrapper">
+                <input type="radio" id="catpuccin" name="theme" value="radio3">
+                <label for="catpuccin">Catpuccin</label>
+            </span>
+            <span class="button-wrapper">
+                <input type="radio" id="dracula" name="theme" value="radio4">
+                <label for="dracula">Dracula</label>
+            </span>
             <label for="custom">Custom: (.csv of hex color codes)</label>
             <input type="file">
+            <!-- <button class="exclusive-button" id="solarized">Solarized</button>
+            <button class="exclusive-button" id="catpuccin">Catpuccin</button>
+            <button class="exclusive-button" id="gruvbox">Gruvbox</button>
+            <button class="exclusive-button" id="dracula">Dracula</button>
+            <button class="exclusive-button" id="nord">Nord</button> -->
         </span>
         <div id="palette">
             <div>

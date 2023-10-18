@@ -3,19 +3,73 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: 100vh;
+    margin: 0;
 }
 
 header {
+    position: sticky;
+    top: 0;
     display: flex;
     flex-direction: row;
     width: 100%;
-    padding: 1em;
     background: rgb(125,125,125);
     color: black;
 }
 
-#right {
-    padding: 2em;
+.header-content {
+    padding: 1vh;
 }
 
+#right {
+    padding: 3vh;
+}
 
+footer {
+    background: rgb(125,125,125);
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+}
+
+#login-buttons {
+    display: flex;
+    padding: 1em;
+    justify-content: center;
+}
+
+#login-buttons button {
+    background-color: rgb(125,125,125);
+    margin: 10px;
+    border-radius: 10px;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#login-buttons button:hover {
+    background-color: rgb(200,200,200);
+}
+
+#login-fields {
+    display: flex;
+    flex-direction: column;
+}
+
+ #radio-buttons input[type="radio"] {
+    display: none;
+} 
+
+input[type="radio"] + label {
+    background-color: rgb(125,125,125);
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+input[type="radio"]:checked + label{
+    background-color: rgb(200,200,200);
+}
