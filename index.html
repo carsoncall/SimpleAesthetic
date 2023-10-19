@@ -10,7 +10,7 @@
 <body>
     <header>
         <div class="header-content">
-            <h1>SimpleAesthetic</h1>
+            SimpleAesthetic
         </div>
             <div id="right">
                 <a href="login.html">Login</a>
@@ -18,21 +18,21 @@
             </div>
     </header>
     <div>
-        <h3>First, pick an image:</h3>
-        <div>
-            <input type="file" name="imageLoader">
-        </div>
-        <div>
-            <h3>Image Preview: </h3>
-            <img src="pixel-art-mountain.jpg" width="500">
-            <span>**Note: Image would be the user-given one** </span>
-        </div>
+        <h5>Upload an image, choose a theme, and create an Aesthetic</h5>
+    </div>
+    <div id="image-wrapper">
+        <img src="pixel-art-mountain.jpg" id="target-image"/>
+        <div>**Note: Image would be the user-given one** </div>
+    </div>
+    <div id="image-buttons"> 
+        <button type="submit">Generate</button>
+        <button type="submit">Download</button>
+        <button type="submit">Reset</button>
     </div>
     <div>
-        <h3>Then, either upload a .csv with hex color codes, or choose a pre-existing theme:</h3>
         <span id="radio-buttons">
             <legend>
-                <h5>Popular Themes</h5>
+                <h5>Themes</h5>
             </legend>
             <span class="button-wrapper">
                 <input type="radio" id="gruvbox" name="theme" value="radio1">
@@ -50,18 +50,28 @@
                 <input type="radio" id="dracula" name="theme" value="radio4">
                 <label for="dracula">Dracula</label>
             </span>
-            <label for="custom">Custom: (.csv of hex color codes)</label>
-            <input type="file">
+            <span class="button-wrapper">
+                <input type="radio" id="nord" name="theme" value="radio5">
+                <label for="nord">Nord</label>
+            </span>
+            <span class="button-wrapper">
+                <input type="radio" id="custom" name="theme" value="radio6">
+                <label for="custom" id="custom-file">Custom(TODO:show select. if clicked)</label>
+            </span>
+            <div>
+                <input type="file" id="custom-file-selector">
+            </div>
             <!-- <button class="exclusive-button" id="solarized">Solarized</button>
             <button class="exclusive-button" id="catpuccin">Catpuccin</button>
             <button class="exclusive-button" id="gruvbox">Gruvbox</button>
             <button class="exclusive-button" id="dracula">Dracula</button>
             <button class="exclusive-button" id="nord">Nord</button> -->
         </span>
+        <div id="palette-title">
+            <h5>Palette </h5>
+        </div>
         <div id="palette">
-            <div>
-                <h5>Palette: </h5>
-            </div>
+    
             <div
                 style="display: inline-block; height: 1em; width: 1em; border: 1px solid rgb(170, 170, 170); background-color: rgb(40, 40, 40);">
             </div>
@@ -144,7 +154,6 @@
                 style="display: inline-block; height: 1em; width: 1em; border: 1px solid rgb(170, 170, 170); background-color: rgb(211, 134, 155);">
             </div>
         </div>
-        <button type="submit">Generate</button>
         <div>
             **Note: Data will be uploaded to the server to be processed via WebSocket**
         </div>

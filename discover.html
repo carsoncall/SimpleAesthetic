@@ -8,7 +8,7 @@
 <body>
     <header>
         <div class="header-content">
-            <h1>SimpleAesthetic</h1>
+            SimpleAesthetic
         </div>
         <div id="right">
             <a href="index.html">Create</a>
@@ -18,20 +18,26 @@
     <div>
         <h3>
             **Here will be all of the palettes from other users, or a selection of them if there are many. This will use a WebSocket 
-            to dynamically load the content as the user scrolls. The data will be stored in the database.**
+            to dynamically load the content as the user scrolls. The data will be stored in the database. An example "card" is given below,
+            but JS will be necessary to implement "lazy" loading/infinite scrolling**
         </h3>
-        <h3>Example palette:</h3>
-        <img src="converted.png" height="400">
-        <div style="display: inline-block;">
-            <div style="display: block; height: 50px; width: 4em; border: 1px solid rgb(170, 170, 170); background-color: rgb(251, 241, 199);"></div>
-            <div style="display: block; height: 50px; width: 4em; border: 1px solid rgb(170, 170, 170); background-color: rgb(239, 219, 178);"></div>
-            <div style="display: block; height: 50px; width: 4em; border: 1px solid rgb(170, 170, 170); background-color: rgb(177, 98, 134);"></div>
-            <div style="display: block; height: 50px; width: 4em; border: 1px solid rgb(170, 170, 170); background-color: rgb(131, 165, 152);"></div>
-            <div style="display: block; height: 50px; width: 4em; border: 1px solid rgb(170, 170, 170); background-color: rgb(104, 157, 106);"></div>
-            <div style="display: block; height: 50px; width: 4em; border: 1px solid rgb(170, 170, 170); background-color: rgb(69, 133, 136);"></div>
-            <div style="display: block; height: 50px; width: 4em; border: 1px solid rgb(170, 170, 170); background-color: rgb(80, 73, 69);"></div>
-            <div style="display: block; height: 50px; width: 4em; border: 1px solid rgb(170, 170, 170); background-color: rgb(40, 40, 40);"></div>
+        <div id="card-container">
+            <div class="card">
+                <span id="card-title">Example Aesthetic</span>
+                <img id="card-image" src="converted.png">
+                <div id="card-palette">
+                    <div id="card-palette-color1" style="background-color: rgb(251, 241, 199);"></div>
+                    <div id="card-palette-color2" style="background-color: rgb(239, 219, 178);"></div>
+                    <div id="card-palette-color3" style="background-color: rgb(177, 98, 134);"></div>
+                    <div id="card-palette-color4" style="background-color: rgb(131, 165, 152);"></div>
+                    <div id="card-palette-color5" style="background-color: rgb(104, 157, 106);"></div>
+                    <div id="card-palette-color6" style="background-color: rgb(69, 133, 136);"></div>
+                    <div id="card-palette-color7" style="background-color: rgb(80, 73, 69);"></div>
+                    <div id="card-palette-color8" style="background-color: rgb(40, 40, 40);"></div>
+                </div>
+            </div>
         </div>
+       
         <span>**Note: palette will be the 8 most prominent colors in the photo. Image and palette height will vary with image size/aspect ratio**</span>
 </body>
 <footer>
