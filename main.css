@@ -50,7 +50,7 @@ footer {
 #target-image {
     margin: 1em;
     border: 2px solid rgb(170,170,170);
-    max-width: 75%;
+    max-width: 500px;
 
 }
 
@@ -76,6 +76,12 @@ footer {
 #login-fields {
     display: flex;
     flex-direction: column;
+}
+
+#radio-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
  #radio-buttons input[type="radio"] {
