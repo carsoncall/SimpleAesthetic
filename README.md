@@ -35,3 +35,7 @@ Note that any text on the pages that is enclosed in two asterisks represents a p
 - Login: the [Login page](login.html) has the necessary input fields and buttons to login and create a new account.
 - Database: The aesthetics shown on the [Discover page](discover.html) are stored and retrieved from the database. 
 - WebSocket: The content on the [Discover page](discover.html) will be dynamically retrieved and sent over WebSocket to the client. 
+
+### CSS Deliverable ###
+- Made sticky header and footer
+- 

@@ -144,29 +144,32 @@ div#palette {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-template-rows: repeat(10,1fr);
     border-radius: 5px;
-    max-width: 95%;
+    max-width: 500px;
+    max-height: 300px;
 }
 
 #card-title {
     grid-row: 1;
-    grid-column: 3;
+    grid-column: 1/6;
     font-weight: bold;
     display: flex;
     align-items: center;
+    padding: 5px;
 }
 
 #card-image {
     grid-row: 2 / 11;
-    grid-column: 1 / 6; 
+    grid-column: 1 / 6;
     max-width: 100%;
+    max-height: 100%;
 }
 
 #card-palette {
     grid-row: 2/11;
-    grid-column: 6;
+    grid-column: 5;
     display: grid;
     grid-template-rows: repeat(8, 1fr);
-    grid-template-columns: 1em;
+    grid-template-columns: 1fr;
 }
 
 #card-palette-color1 {
