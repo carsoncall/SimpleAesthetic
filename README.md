@@ -38,4 +38,9 @@ Note that any text on the pages that is enclosed in two asterisks represents a p
 
 ### CSS Deliverable ###
 - Made sticky header and footer
-- 
+- Centered and adjusted website elements to make a more visually appealing experience
+- Used a very minimal but consistent color scheme to focus attention on the colors being generated/manipulated
+- Designed the website to look good on many different screen sizes and magnifications
+- Modified a couple of HTML elements to help streamline the user experience
+- Created a custom radio button style that hides the radio circle and is responsive to both hover and clicking
+- Designed a "card" style from scratch that will represent an *Aesthetic* and will form the basis for the future "Discover" function

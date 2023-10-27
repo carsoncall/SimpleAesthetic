@@ -2,7 +2,6 @@
 <link rel="stylesheet" href="main.css"/>
 <html lang="english">
 </html>
-
 <head>
     <title>SimpleAesthetic</title>
 </head>
@@ -21,13 +20,14 @@
         <h5>Upload an image, choose a theme, and create an Aesthetic</h5>
     </div>
     <div id="image-wrapper">
-        <img src="pixel-art-mountain.jpg" id="target-image"/>
-        <div>**Note: Image would be the user-given one** </div>
+        <img src="assets/pixel-art-mountain.jpg" id="target-image"/>
     </div>
     <div id="image-buttons"> 
-        <button type="submit">Generate</button>
-        <button type="submit">Download</button>
-        <button type="submit">Reset</button>
+        <button type="submit" id="upload-image">Upload Image</button>
+        <input type="file" id="upload-image-selector" accept=".jpg, .png" style="display: none;"/>
+        <button type="submit" id="convert-image">Convert Image</button>
+        <button type="submit" id="download-image">Download Image</button>
+        <button type="submit" id="undo-changes">Undo Changes</button>
     </div>
     <div>
         <legend>
@@ -35,28 +35,29 @@
         </legend>
         <div id="radio-buttons">
             <div class="button-wrapper">
-                <input type="radio" id="gruvbox" name="theme" value="radio1">
+                <input type="radio" id="gruvbox" value="gruvbox" name="theme-button">
                 <label for="gruvbox">Gruvbox</label>
             </div>
             <div class="button-wrapper">
-                <input type="radio" id="solarized" name="theme" value="radio2">
+                <input type="radio" id="solarized" value="solarized" name="theme-button">
                 <label for="solarized">Solarized</label>
             </div>
             <div class="button-wrapper">
-                <input type="radio" id="catpuccin" name="theme" value="radio3">
+                <input type="radio" id="catpuccin" value="catpuccin" name="theme-button">
                 <label for="catpuccin">Catpuccin</label>
             </div>
             <div class="button-wrapper">
-                <input type="radio" id="dracula" name="theme" value="radio4">
+                <input type="radio" id="dracula" value="dracula" name="theme-button">
                 <label for="dracula">Dracula</label>
             </div>
             <div class="button-wrapper">
-                <input type="radio" id="nord" name="theme" value="radio5">
+                <input type="radio" id="nord" value="nord" name="theme-button">
                 <label for="nord">Nord</label>
             </div>
             <div class="button-wrapper">
-                <input type="radio" id="custom" name="theme" value="radio6">
+                <input type="radio" id="custom" value="custom" name="theme-button">
                 <label for="custom" id="custom-file">Custom</label>
+                <input type="file" id="custom-theme-selector" accept=".json" style="display: none;"/>
             </div>
         </div>
         <div>
@@ -153,6 +154,7 @@
             **Note: Data will be uploaded to the server to be processed via WebSocket**
         </div>
     </div>
+    <script src="index.js" type="module"></script>
 </body>
 <footer>
     <span>made by Carson Call | </span>
