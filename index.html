@@ -57,11 +57,25 @@
             <div class="button-wrapper">
                 <input type="radio" id="custom" value="custom" name="theme-button">
                 <label for="custom" id="custom-file">Custom</label>
-                <input type="file" id="custom-theme-selector" accept=".json" style="display: none;"/>
             </div>
         </div>
-        <div>
-            <input type="file" id="custom-file-selector">
+        <div id="custom-theme-selector-wrapper">
+            <input type="file" id="custom-theme-selector" accept=".json"/>
+        </div>
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <h2>Custom Theme Instructions</h2>
+                <p>The custom theme must be a text file containing a JSON array that contains RGB tuples.</p>
+                <p>Example:</p>
+                <pre>  
+                [
+                [255,255,255],
+                [120,160,190],
+                [34,78,99]
+                ]
+                </pre>
+                <button type="submit" id="modal-understood">Understood!</button>
+            </div>
         </div>
         <div id="palette-title">
             <h5>Palette </h5>
@@ -150,9 +164,7 @@
                 style="display: inline-block; height: 1em; width: 1em; border: 1px solid rgb(170, 170, 170); background-color: rgb(211, 134, 155);">
             </div>
         </div>
-        <div>
-            **Note: Data will be uploaded to the server to be processed via WebSocket**
-        </div>
+        <br/>
     </div>
     <script src="index.js" type="module"></script>
 </body>
