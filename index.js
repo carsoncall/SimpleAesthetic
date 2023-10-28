@@ -4,6 +4,7 @@ import { themes } from './themes.js'
 const imageBox = document.getElementById('target-image');
 const instructionModal = document.getElementById('modal');
 const customThemeSelectorWrapper = document.getElementById('custom-theme-selector-wrapper');
+const palette = document.getElementById('palette');
 //button variables
 const uploadImageButton = document.getElementById('upload-image');
 const convertImageButton = document.getElementById('convert-image');
@@ -79,7 +80,8 @@ uploadImageSelector.addEventListener("change", (e) => {
     }
 });
 
-//radio button listeners to determine which theme has been selected
+//radio button listeners to determine which theme has been selected.
+//if custom is selected, then make the file picker visible
 radioButtons.forEach( (radioButton) => {
     console.log("adding event listeners");
     radioButton.addEventListener("change", (e) => {
@@ -91,6 +93,9 @@ radioButtons.forEach( (radioButton) => {
                 customThemeSelectorWrapper.classList.add('visible');
             } else {
                 customThemeSelectorWrapper.classList.remove('visible');
+                theme = themes[themeName];
+                themeLength = theme.length;
+                putPalette(theme);
             }
         }
     });
@@ -114,7 +119,9 @@ customThemeSelector.addEventListener("change", (e) => {
             let jsonString = event.target.result;
             try {
                 theme = JSON.parse(jsonString);
+                themeLength = theme.length;
                 console.log(theme);
+                putPalette(theme);
             } catch(error) {
                 console.error("Error parsing custom JSON theme: ", error);
             }
@@ -132,8 +139,19 @@ function putImage(imageURL) {
 }
 
 //remakes the palette to reflect the selected theme
-function putPalette(palette) {
+function putPalette(theme) {
+    //remove previous palette
+    while (palette.firstChild) {
+        palette.removeChild(palette.firstChild);
+    }
 
+    //put new palette
+    for (let i = 0; i < theme.length; i++) {
+        const paletteSwatch = document.createElement('div');
+        paletteSwatch.classList.add('palette-swatch');
+        paletteSwatch.style.backgroundColor = `rgb(${theme[i][0]}, ${theme[i][1]}, ${theme[i][2]})`;
+        palette.appendChild(paletteSwatch);
+    }
 }
 
 //Conversion functions =======================================================================================================

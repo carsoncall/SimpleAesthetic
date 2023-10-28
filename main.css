@@ -134,6 +134,13 @@ div#palette {
     justify-content: center;
 }
 
+.palette-swatch {
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+    border: 1px solid rgb(170,170,170);
+}
+
 #image-buttons button {
     background-color: rgb(170,170,170);
     color: black;
