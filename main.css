@@ -141,6 +141,10 @@ div#palette {
     border: 1px solid rgb(170,170,170);
 }
 
+#image-buttons-loading-container {
+    display: none;
+} 
+
 #image-buttons button {
     background-color: rgb(170,170,170);
     color: black;

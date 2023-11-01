@@ -44,3 +44,15 @@ Note that any text on the pages that is enclosed in two asterisks represents a p
 - Modified a couple of HTML elements to help streamline the user experience
 - Created a custom radio button style that hides the radio circle and is responsive to both hover and clicking
 - Designed a "card" style from scratch that will represent an *Aesthetic* and will form the basis for the future "Discover" function
+
+### JavaScript Deliverable ###
+- Added a ton of JavaScript to implement the Aesthetic creation page
+    - implemented the **Upload Image**, **Convert Image**, **Download Image**, and **Undo Changes** button event listeners.
+    - implemented event listeners for each of the preloaded theme radio buttons.
+        - made the function to dynamically change the palette that is displayed based on the selection 
+    - implemented an event listener that creates a modal when the user selects the **Custom** theme option and makes the "select file" prompt appear
+        - (created the HTML and CSS for the modal)
+    - implemented an event listener to dismiss the modal
+    - implemented the convertImage() function that actually modifies the pixels in the image using a Euclidean color distance formula
+- Added dummy JavaScript to display the username and password when the user tries to login (actual functionality depends on database and backend)
+- 

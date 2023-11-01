@@ -5,6 +5,11 @@ const imageCanvas = document.getElementById('target-image');
 const instructionModal = document.getElementById('modal');
 const customThemeSelectorWrapper = document.getElementById('custom-theme-selector-wrapper');
 const palette = document.getElementById('palette');
+const imageButtons = document.getElementById('image-buttons');
+const imageButtonsLoadingContainer = document.getElementById('image-buttons-loading-container');
+console.log(imageButtons);
+console.log(imageButtonsLoadingContainer);
+
 //button variables
 const uploadImageButton = document.getElementById('upload-image');
 const convertImageButton = document.getElementById('convert-image');
@@ -18,8 +23,6 @@ const modalUnderstood = document.getElementById('modal-understood');
 //global variables
 let image = new Image();
 let imageURL;
-let modifiedImage = new Image();
-let modifiedImageURL;
 let themeArray = [];
 
 
@@ -53,8 +56,12 @@ convertImageButton.addEventListener("click", (event) => {
         return;
     } else {
         let imageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
+        imageButtons.style.display = 'none';
+        imageButtonsLoadingContainer.style.display = 'block';
         convertImage(imageData, themeArray);
-        console.log("image conversion called")
+        imageButtons.style.display = 'block';
+        imageButtonsLoadingContainer.style.display = 'none';
+        console.log("image conversion called");
     }
 });
 
