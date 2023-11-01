@@ -1,7 +1,7 @@
 import { themes } from './themes.js'
 
 //page variables
-const imageBox = document.getElementById('target-image');
+const imageCanvas = document.getElementById('target-image');
 const instructionModal = document.getElementById('modal');
 const customThemeSelectorWrapper = document.getElementById('custom-theme-selector-wrapper');
 const palette = document.getElementById('palette');
@@ -20,9 +20,11 @@ let image = new Image();
 let imageURL;
 let modifiedImage = new Image();
 let modifiedImageURL;
-let themeName;
-let theme = [];
-let themeLength = 0;
+let themeArray = [];
+
+
+//canvas context
+const ctx = imageCanvas.getContext("2d");
 
 //Event listeners===========================================================================================================
 
@@ -45,8 +47,15 @@ uploadImageButton.addEventListener("click", (event) => {
 
 //button event listener to call converter function
 convertImageButton.addEventListener("click", (event) => {
-    convertImage(imageURL, palette)
-    console.log("image converting")
+    if (themeArray.length === 0) {
+        alert("No theme selected!");
+        console.log("conversion failed: no theme selected");
+        return;
+    } else {
+        let imageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
+        convertImage(imageData, themeArray);
+        console.log("image conversion called")
+    }
 });
 
 //button event listener to download currently displayed file
@@ -65,7 +74,7 @@ undoChangesButton.addEventListener("click", (event) => {
     putImage(imageURL);
 });
 
-//file selector listener to actually do something when a file is selected
+//file selector listener to actually do something when an image file is selected
 uploadImageSelector.addEventListener("change", (e) => {
     let selectedFile = e.target.files[0]; //gets the selected file
     if (selectedFile) {
@@ -74,7 +83,8 @@ uploadImageSelector.addEventListener("change", (e) => {
         // file reader event listener
         reader.onload = (event) => {
             imageURL = event.target.result;
-            putImage(imageURL); // the something being done 
+            putImage(imageURL); // the something being done
+            console.log(imageURL);
         }
         reader.readAsDataURL(selectedFile);
     }
@@ -93,9 +103,8 @@ radioButtons.forEach( (radioButton) => {
                 customThemeSelectorWrapper.classList.add('visible');
             } else {
                 customThemeSelectorWrapper.classList.remove('visible');
-                theme = themes[themeName];
-                themeLength = theme.length;
-                putPalette(theme);
+                themeArray = themes[themeName];
+                putPalette(themeArray);
             }
         }
     });
@@ -134,42 +143,63 @@ customThemeSelector.addEventListener("change", (e) => {
 
 //I bet you can guess what this does
 function putImage(imageURL) {
-    imageBox.setAttribute("src", imageURL);
+    image.src = imageURL;
+    image.onload = () => {
+        imageCanvas.width = image.width;
+        imageCanvas.height = image.height;
+        ctx.drawImage(image, 0, 0);
+    }
     console.log("image displayed");
 }
 
 //remakes the palette to reflect the selected theme
-function putPalette(theme) {
+function putPalette(themeArray) {
     //remove previous palette
     while (palette.firstChild) {
         palette.removeChild(palette.firstChild);
     }
 
     //put new palette
-    for (let i = 0; i < theme.length; i++) {
+    for (let i = 0; i < themeArray.length; i++) {
         const paletteSwatch = document.createElement('div');
         paletteSwatch.classList.add('palette-swatch');
-        paletteSwatch.style.backgroundColor = `rgb(${theme[i][0]}, ${theme[i][1]}, ${theme[i][2]})`;
+        paletteSwatch.style.backgroundColor = `rgb(${themeArray[i][0]}, ${themeArray[i][1]}, ${themeArray[i][2]})`;
         palette.appendChild(paletteSwatch);
     }
 }
 
 //Conversion functions =======================================================================================================
 
-//takes in imageData, determines image type, and calls the appropriate converter
-function convertImage(imageData, palette) {
+//converts image to the palette colors
+function convertImage(imageData, themeArray){
+    let pixels = imageData.data;
+    //for each pixel in the image
+    for (let i = 0; i < pixels.length; i+=4) {
+        let minimum = 0;
+        let lens = []; //lens is an array of tuples where [themeArrayIndex (aka j), distanceFromPixel]
 
+        //for each color in theme
+        for (let j = 0; j < themeArray.length; j++) {
+            //3D (euclidean) distance from color -- not particulary great but good enough; other algorithms potentially worth 
+            //implementing in the future
+            let distanceFromPixel = (Math.sqrt(Math.pow(pixels[i]-themeArray[j][0], 2) 
+                                        + Math.pow(pixels[i+1]-themeArray[j][1], 2) 
+                                        + Math.pow(pixels[i+2]-themeArray[j][2], 2)));
+            let lensEntry = [j, distanceFromPixel];
+            lens.push(lensEntry);
+        }
+        //sort distances from pixels and find the smallest
+        //sort the array from least to greatest
+        lens.sort((a,b) => a[1]-b[1]);
+
+        let colorNum = lens[0][0]; //this is the index of the closest color to the pixel
+        for (let k = 0; k < 3; k++) {
+            pixels[i+k] = themeArray[colorNum][k];
+        }
+    }
+    ctx.putImageData(imageData, 0, 0);
 }
 
-//converts PNG to the palette colors
-function convertPNGImage(imageData, palette){
-
-}
-
-//converts JPEG to the palette colors
-function convertJPEGImage(imageData, palette){
-
-}
 
 //Other==========================================================================================================================
 
