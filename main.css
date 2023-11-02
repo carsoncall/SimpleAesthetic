@@ -155,9 +155,11 @@ div#palette {
 }
 
 #card-container {
+    height: 500px;
+    overflow: auto;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 .card {
@@ -197,53 +199,35 @@ div#palette {
     height: 100%;
 }
 
-#card-palette-color1 {
-    grid-row: 1;
+#card-palette-color {
     display: inline-block;
     height: 100%;
     width: 100%;
+}
+
+#card-palette-color1 {
+    grid-row: 1;  
 }
 #card-palette-color2 {
     grid-row: 2;
-    display: inline-block;
-    height: 100%;
-    width: 100%;
 }
 #card-palette-color3 {
     grid-row: 3;
-    display: inline-block;
-    height: 100%;
-    width: 100%;
 }
 #card-palette-color4 {
     grid-row: 4;
-    display: inline-block;
-    height: 100%;
-    width: 100%;
 }
 #card-palette-color5 {
     grid-row: 5;
-    display: inline-block;
-    height: 100%;
-    width: 100%;
 }
 #card-palette-color6 {
     grid-row: 6;
-    display: inline-block;
-    height: 100%;
-    width: 100%;
 }
 #card-palette-color7 {
     grid-row: 7;
-    display: inline-block;
-    height: 100%;
-    width: 100%;
 }
 #card-palette-color8 {
     grid-row: 8;
-    display: inline-block;
-    height: 100%;
-    width: 100%;
     border-bottom-right-radius: 9px;
 }
 
