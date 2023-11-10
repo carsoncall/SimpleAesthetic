@@ -55,4 +55,7 @@ Note that any text on the pages that is enclosed in two asterisks represents a p
     - implemented an event listener to dismiss the modal
     - implemented the convertImage() function that actually modifies the pixels in the image using a Euclidean color distance formula
 - Added dummy JavaScript to display the username and password when the user tries to login (actual functionality depends on database and backend)
-- 
+- Added code to implement lazy loading with dummy (repeated) data in the ***Discover*** page. 
+    - Added scrolling functionality and loading based on viewport location
+    - added a loading card to show that another card would be coming
+- Various HTML and CSS adjustments to improve UI and UX
