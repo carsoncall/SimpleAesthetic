@@ -39,6 +39,12 @@ window.addEventListener("load", () => {
         radioButton.checked = false;
         console.log('resetting radio buttons');
     });
+    fetch("https://picsum.photos/1000")
+    .then(data => {
+        putImage(data["url"]);
+        console.log("Random image fetched");
+        console.log("Data: " , data);
+    })
 })
 
 //button event listener to make image file choice dialog appear

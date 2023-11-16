@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-app.get('/api/next-aesthetic', (req, res) => {
+app.get('/next-aesthetic', (req, res) => {
   res.send(`
   <span id="card-title">Example Aesthetic (placeholder for db info)</span>
           <img id="card-image" src="assets/converted.png">
@@ -18,14 +18,18 @@ app.get('/api/next-aesthetic', (req, res) => {
   `);
 });
 
-app.put('/api/upload-aesthetic', (req, res) => {
+app.put('/upload-aesthetic', (req, res) => {
   res.send({ "result": "success (placeholder for when the database is implemented"});
 });
 
 //login token -- without cookies
-app.get('/api/login', (req, res) => {
-  res.send({ "result": "success (placeholder for when the database is implemented"});
+app.get('/login', (req, res) => {
+  res.send({ "result": "Congratulations! You have logged in (db placeholder)"});
 });
+
+app.get('/create-account', (req, res) => {
+  res.send({ "result": "Congratulations! You have logged in (db placeholder)"});
+})
 
 const port = 5000;
 app.listen(port, function () {

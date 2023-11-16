@@ -15,18 +15,22 @@ let modalUnderstood = document.getElementById('modal-understood');
 loginButton.addEventListener("click", (e) => {
     console.log("login button clicked");
     let fields = getTextFromFields();
-    writeToModal("Congratulations! You have logged in", `username: ${fields['username']}, password: not telling ;)`);
+    let result = login(fields['username'], fields['password']);
+    console.log("test: ", result["result"]);
+    writeToModal(result["result"], `username: ${fields['username']}, password: not telling ;)`);
     instructionModal.classList.add('visible');
-    console.log(fields);
+    console.log("Login Fields: ", fields);
 
 });
 
 createNewAccountButton.addEventListener("click", (e) => {
     console.log('create new account button clicked');
     let fields = getTextFromFields();
-    writeToModal("Congratulations! You have made an account", `username: ${fields['username']}, password: not telling ;)`);
+    let result = createAccount(fields['username'], fields['password']);
+    console.log("test: ", result["result"]);
+    writeToModal(result["result"], `username: ${fields['username']}, password: not telling ;)`);
     instructionModal.classList.add('visible');
-    console.log(getTextFromFields());
+    console.log("Create Account Fields: ", fields);
 });
 
 modalUnderstood.addEventListener("click", (e) => {
@@ -42,4 +46,36 @@ function getTextFromFields() {
 function writeToModal(title, text) {
     modalTitle.textContent = title;
     modalText.textContent = text;
+}
+
+async function login(username, password) {
+    return await fetch('https://api.simpleaesthetic.carsonandkaitlyn.com/login')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('Login failed: ', error);
+    });
+}
+
+async function createAccount(username, password) {
+    return await fetch('https://api.simpleaesthetic.carsonandkaitlyn.com/create-account')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then (data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('Login failed: ', error);
+    });
 }
