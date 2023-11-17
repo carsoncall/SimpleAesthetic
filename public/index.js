@@ -7,8 +7,6 @@ const customThemeSelectorWrapper = document.getElementById('custom-theme-selecto
 const palette = document.getElementById('palette');
 const imageButtons = document.getElementById('image-buttons');
 const imageButtonsLoadingContainer = document.getElementById('image-buttons-loading-container');
-console.log(imageButtons);
-console.log(imageButtonsLoadingContainer);
 
 //button variables
 const uploadImageButton = document.getElementById('upload-image');
@@ -23,6 +21,7 @@ const modalUnderstood = document.getElementById('modal-understood');
 //global variables
 let image = new Image();
 let imageURL;
+let oldImageDataURL;
 let themeArray = [];
 
 
@@ -62,11 +61,7 @@ convertImageButton.addEventListener("click", (event) => {
         return;
     } else {
         let imageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
-        imageButtons.style.display = 'none';
-        imageButtonsLoadingContainer.style.display = 'block';
         convertImage(imageData, themeArray);
-        imageButtons.style.display = 'block';
-        imageButtonsLoadingContainer.style.display = 'none';
         console.log("image conversion called");
     }
 });
@@ -74,7 +69,7 @@ convertImageButton.addEventListener("click", (event) => {
 //button event listener to download currently displayed file
 downloadImageButton.addEventListener("click", (e) => {
     let downloadLink = document.createElement("a");
-    downloadLink.href = imageBox.getAttribute("src");
+    downloadLink.href = image.src;
     //extract the image type from the URL
     let fileExtension = downloadLink.href.split(';')[0].split(':')[1];
     downloadLink.download = "image." + fileExtension;
@@ -84,7 +79,7 @@ downloadImageButton.addEventListener("click", (e) => {
 
 //button event listener to revert image
 undoChangesButton.addEventListener("click", (event) => {
-    putImage(imageURL);
+    putImage(oldImageDataURL);
 });
 
 //file selector listener to actually do something when an image file is selected
@@ -95,8 +90,8 @@ uploadImageSelector.addEventListener("change", (e) => {
         let reader = new FileReader();
         // file reader event listener
         reader.onload = (event) => {
-            imageURL = event.target.result;
-            putImage(imageURL); // the something being done
+            image.src = event.target.result;
+            putImage(); // the something being done
             console.log(imageURL);
         }
         reader.readAsDataURL(selectedFile);
@@ -186,32 +181,43 @@ function putPalette(themeArray) {
 
 //converts image to the palette colors
 function convertImage(imageData, themeArray){
+    imageButtons.classList.add('invisible');
+    imageButtonsLoadingContainer.classList.add('visible');
+    oldImageDataURL = image.src;
     let pixels = imageData.data;
     //for each pixel in the image
-    for (let i = 0; i < pixels.length; i+=4) {
-        let minimum = 0;
-        let lens = []; //lens is an array of tuples where [themeArrayIndex (aka j), distanceFromPixel]
+    //setTimeout wrapper to allow the DOM to update 
+    setTimeout( () => {
+        for (let i = 0; i < pixels.length; i+=4) {
+            let minimum = 0;
+            let lens = []; //lens is an array of tuples where [themeArrayIndex (aka j), distanceFromPixel]
 
-        //for each color in theme
-        for (let j = 0; j < themeArray.length; j++) {
-            //3D (euclidean) distance from color -- not particulary great but good enough; other algorithms potentially worth 
-            //implementing in the future
-            let distanceFromPixel = (Math.sqrt(Math.pow(pixels[i]-themeArray[j][0], 2) 
-                                        + Math.pow(pixels[i+1]-themeArray[j][1], 2) 
-                                        + Math.pow(pixels[i+2]-themeArray[j][2], 2)));
-            let lensEntry = [j, distanceFromPixel];
-            lens.push(lensEntry);
-        }
-        //sort distances from pixels and find the smallest
-        //sort the array from least to greatest
-        lens.sort((a,b) => a[1]-b[1]);
+            //for each color in theme
+            for (let j = 0; j < themeArray.length; j++) {
+                //3D (euclidean) distance from color -- not particulary great but good enough; other algorithms potentially worth 
+                //implementing in the future
+                let distanceFromPixel = (Math.sqrt(Math.pow(pixels[i]-themeArray[j][0], 2) 
+                                            + Math.pow(pixels[i+1]-themeArray[j][1], 2) 
+                                            + Math.pow(pixels[i+2]-themeArray[j][2], 2)));
+                let lensEntry = [j, distanceFromPixel];
+                lens.push(lensEntry);
+            }
+            //sort distances from pixels and find the smallest
+            //sort the array from least to greatest
+            lens.sort((a,b) => a[1]-b[1]);
 
-        let colorNum = lens[0][0]; //this is the index of the closest color to the pixel
-        for (let k = 0; k < 3; k++) {
-            pixels[i+k] = themeArray[colorNum][k];
+            let colorNum = lens[0][0]; //this is the index of the closest color to the pixel
+            for (let k = 0; k < 3; k++) {
+                pixels[i+k] = themeArray[colorNum][k];
+            }
         }
-    }
-    ctx.putImageData(imageData, 0, 0);
+        ctx.putImageData(imageData, 0, 0);
+        image.src = imageCanvas.toDataURL('image/png');
+        imageButtons.classList.remove('invisible');
+        imageButtonsLoadingContainer.classList.remove('visible');
+        console.log("finished conversion (buttons should appear)");
+    }, 0);
+    
 }
 
 

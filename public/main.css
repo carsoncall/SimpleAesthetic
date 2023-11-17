@@ -143,7 +143,15 @@ div#palette {
 
 #image-buttons-loading-container {
     display: none;
-} 
+}
+
+#image-buttons-loading-container.visible {
+    display: block;
+}
+
+#image-buttons.invisible {
+    display: none;
+}
 
 #image-buttons button {
     background-color: rgb(170,170,170);
