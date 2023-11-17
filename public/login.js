@@ -15,22 +15,13 @@ let modalUnderstood = document.getElementById('modal-understood');
 loginButton.addEventListener("click", (e) => {
     console.log("login button clicked");
     let fields = getTextFromFields();
-    let result = login(fields['username'], fields['password']);
-    console.log("test: ", result["result"]);
-    writeToModal(result["result"], `username: ${fields['username']}, password: not telling ;)`);
-    instructionModal.classList.add('visible');
-    console.log("Login Fields: ", fields);
-
+    login(fields['username'], fields['password']);
 });
 
 createNewAccountButton.addEventListener("click", (e) => {
     console.log('create new account button clicked');
     let fields = getTextFromFields();
-    let result = createAccount(fields['username'], fields['password']);
-    console.log("test: ", result["result"]);
-    writeToModal(result["result"], `username: ${fields['username']}, password: not telling ;)`);
-    instructionModal.classList.add('visible');
-    console.log("Create Account Fields: ", fields);
+    createAccount(fields['username'], fields['password']);
 });
 
 modalUnderstood.addEventListener("click", (e) => {
@@ -49,7 +40,7 @@ function writeToModal(title, text) {
 }
 
 async function login(username, password) {
-    return await fetch('https://api.simpleaesthetic.carsonandkaitlyn.com/login')
+    return await fetch('https://simpleaesthetic.carsonandkaitlyn.com/login')
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -57,7 +48,9 @@ async function login(username, password) {
         return response.json();
     })
     .then(data => {
-        console.log(data);
+        console.log("Login data from server: ", data);
+        writeToModal(data["result"], `username: ${username}, password: not telling ;)`);
+        instructionModal.classList.add('visible');
     })
     .catch(error => {
         console.error('Login failed: ', error);
@@ -65,7 +58,7 @@ async function login(username, password) {
 }
 
 async function createAccount(username, password) {
-    return await fetch('https://api.simpleaesthetic.carsonandkaitlyn.com/create-account')
+    return await fetch('https://simpleaesthetic.carsonandkaitlyn.com/create-account')
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -73,7 +66,9 @@ async function createAccount(username, password) {
         return response.json();
     })
     .then (data => {
-        console.log(data);
+        console.log("Account Creation data from server: ", data);
+        writeToModal(data["result"], `username: ${username}, password: not telling ;)`);
+        instructionModal.classList.add('visible');
     })
     .catch(error => {
         console.error('Login failed: ', error);

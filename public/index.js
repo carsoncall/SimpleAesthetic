@@ -43,7 +43,7 @@ window.addEventListener("load", () => {
     .then(data => {
         putImage(data["url"]);
         console.log("Random image fetched");
-        console.log("Data: " , data);
+        //console.log("Data: " , data);
     })
 })
 
@@ -157,6 +157,7 @@ customThemeSelector.addEventListener("change", (e) => {
 //I bet you can guess what this does
 function putImage(imageURL) {
     image.src = imageURL;
+    image.crossOrigin = "anonymous";
     image.onload = () => {
         imageCanvas.width = image.width;
         imageCanvas.height = image.height;
