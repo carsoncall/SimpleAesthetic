@@ -59,3 +59,10 @@ Note that any text on the pages that is enclosed in two asterisks represents a p
     - Added scrolling functionality and loading based on viewport location
     - added a loading card to show that another card would be coming
 - Various HTML and CSS adjustments to improve UI and UX
+
+### Service Deliverable ###
+- Wrote a Node.js/Express backend that serves the frontend and provides backend endpoints
+- Used static middleware to serve frontend
+- Called a third-party endpoint to provide random images every time you load the page.
+- Backend endpoints give placeholder data that is visible as such on the frontend. 
+- Implemented calls to backend in the frontend code using the fetch API.
