@@ -51,20 +51,48 @@ export default class Aesthetic {
      * @param {Array<Array<number>>} paletteColors - An array of tuples of three numbers, which represent R, G, and B.
      * @param {ImageData} imageData - an ImageData object (derived from canvasContext.getImageData())
      */
-    convertImage(imageData) {
+    convertImage(imageData, imageCanvas, canvasContext) {
         if (!(imageData instanceof ImageData)) {
             throw new Error("convertImage() failed because the param:imageData was not of type ImageData");
         }
-        let pixels = imageData.data; //gets the Uint8ClampedArray from the ImageData object
-
-        //setTimeout wrapper to allow the DOM to update 
-        setTimeout( () => {
-            const blob = this._euclideanDistanceConverter(pixels); // creates a blob with the new converted image
-            this._aestheticImage.src = URL.createObjectURL(blob); // creates a dataURL from the blob
-            console.log("finished conversion (buttons should appear, image should change)");
-        }, 0);     
+        this._euclideanDistanceConverter(imageData, canvasContext);
+        this._aestheticImage.src = imageCanvas.toDataURL('image/png');  
     }
 
+    /**
+     * 3D (euclidean) distance from color -- not particulary great but good enough; other algorithms potentially worth implementing in the future
+     * 
+     * @param {Uint8ClampedArray} pixels - the pixel values of the image to be converted
+     * @returns A blob with type 'image/png'
+     */
+    _euclideanDistanceConverter(imageData, canvasContext) {
+        let pixelSize = 4; // pixel is four numbers R,G,B,A in this format
+        let colorSize = 3; // colors are provided as three numbers R,G,B
+        let pixels = imageData.data;
+
+        for (let pixelIndex = 0; pixelIndex < pixels.length; pixelIndex+=pixelSize) { // for each pixel in pixels 
+            let lens = []; //lens is an array of tuples where [paletteColorsIndex (aka j), distanceFromPixel]
+
+            for (let paletteIndex = 0; paletteIndex < this.paletteColors.length; paletteIndex++) { // for each color in paletteColors
+                let distanceFromPixel = (Math.sqrt(Math.pow(pixels[pixelIndex]-this.paletteColors[paletteIndex][0], 2) 
+                                            + Math.pow(pixels[pixelIndex+1]-this.paletteColors[paletteIndex][1], 2) 
+                                            + Math.pow(pixels[pixelIndex+2]-this.paletteColors[paletteIndex][2], 2)));
+                let lensEntry = [paletteIndex, distanceFromPixel];
+                lens.push(lensEntry);
+            }
+
+            //sort distances from pixels and find the smallest
+            lens.sort((a,b) => a[1]-b[1]); //sort the array from least to greatest
+
+            let closestColorIndex = lens[0][0]; //this is the index of the closest color to the pixel
+
+            for (let k = 0; k < colorSize; k++) { //for each color in the tuple at paletteColors[colorNum]
+                pixels[pixelIndex + k] = Math.min(255, Math.max(0, this.paletteColors[closestColorIndex][k])); //ensure values are between 0 and 255
+            }
+        }
+
+        canvasContext.putImageData(imageData, 0, 0);
+    }
     /**
      * Revert object to initial state when picture was uploaded
      */
@@ -84,38 +112,6 @@ export default class Aesthetic {
         }
     }
 
-    /**
-     * 3D (euclidean) distance from color -- not particulary great but good enough; other algorithms potentially worth implementing in the future
-     * 
-     * @param {Uint8ClampedArray} pixels - the pixel values of the image to be converted
-     * @returns A blob with type 'image/png'
-     */
-    _euclideanDistanceConverter(pixels) {
-        let pixelSize = 4; // pixel is four numbers R,G,B,A in this format
-        let colorSize = 3; // colors are provided as three numbers R,G,B
-
-        for (let pixelIndex = 0; pixelIndex < pixels.length; pixelIndex+=pixelSize) { // for each pixel in pixels 
-            let lens = []; //lens is an array of tuples where [paletteColorsIndex (aka j), distanceFromPixel]
-
-            for (let paletteIndex = 0; paletteIndex < this.paletteColors.length; paletteIndex++) { // for each color in paletteColors
-                let distanceFromPixel = (Math.sqrt(Math.pow(pixels[pixelIndex]-this.paletteColors[paletteIndex][0], 2) 
-                                            + Math.pow(pixels[pixelIndex+1]-this.paletteColors[paletteIndex][1], 2) 
-                                            + Math.pow(pixels[pixelIndex+2]-this.paletteColors[paletteIndex][2], 2)));
-                let lensEntry = [paletteIndex, distanceFromPixel];
-                lens.push(lensEntry);
-            }
-
-            //sort distances from pixels and find the smallest
-            lens.sort((a,b) => a[1]-b[1]); //sort the array from least to greatest
-
-            let closestColorIndex = lens[0][0]; //this is the index of the closest color to the pixel
-
-            for (let k = 0; k < colorSize; k++) { //for each color in the tuple at paletteColors[colorNum]
-                pixels[pixelIndex+k] = this.paletteColors[closestColorIndex][k];
-            }
-        }
-        return new Blob([pixels], { type: "image/png" });
-    }
 
     /**
      * Regular expression for matching data URLs

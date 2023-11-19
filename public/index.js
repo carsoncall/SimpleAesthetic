@@ -50,7 +50,7 @@ uploadImageButton.addEventListener("click", (event) => {
 });
 
 //button event listener to call converter function
-convertImageButton.addEventListener("click", (event) => {
+convertImageButton.addEventListener("click", async () => {
     if (currentAesthetic.paletteColors.length === 0) {
         alert("No theme selected! Select a theme and try again.");
         console.log("No theme selected! Select a theme and try again.");
@@ -61,7 +61,7 @@ convertImageButton.addEventListener("click", (event) => {
         //TODO: make this thing work 
         imageButtons.classList.add('invisible');
         imageButtonsLoadingContainer.classList.add('visible');
-        currentAesthetic.convertImage(imageData);
+        currentAesthetic.convertImage(imageData, imageCanvas, canvasContext);
 
         imageButtons.classList.remove('invisible');
         imageButtonsLoadingContainer.classList.remove('visible');
