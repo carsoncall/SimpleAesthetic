@@ -68,14 +68,17 @@
         <div id="modal" class="modal">
             <div class="modal-content">
                 <h2>Custom Theme Instructions</h2>
-                <p>The custom theme must be a text file containing a JSON array of RGB tuples.</p>
+                <p>The custom theme must be a text file containing a JSON object, with two elements: a name and an array of RGB tuples. Ideally at least 8 colors. </p>
                 <p>Example:</p>
                 <pre>  
-                [
-                [255,255,255],
-                [120,160,190],
-                [34,78,99]
-                ]
+                {
+                    "name": "My custom theme",
+                    "theme": [
+                    [255,255,255],
+                    [120,160,190],
+                    [34,78,99]
+                    ]
+                }
                 </pre>
                 <button type="submit" id="modal-understood">Understood!</button>
             </div>

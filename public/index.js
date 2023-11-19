@@ -1,10 +1,12 @@
-import themes from './themes.js'
+import { themes } from './themes.js'
 //hostname for backend -- debugging purposes
 import hostname from './hostname.js';
 import Aesthetic from './Aesthetic.js'
 
 //page variables
 const imageCanvas = document.getElementById('target-image');
+const canvasContext = imageCanvas.getContext("2d");
+
 const instructionModal = document.getElementById('modal');
 const customThemeSelectorWrapper = document.getElementById('custom-theme-selector-wrapper');
 const palette = document.getElementById('palette');
@@ -25,45 +27,44 @@ const shareAesethetic = document.getElementById('share-aesthetic');
 //global variable that holds the current aesthetic
 const currentAesthetic = new Aesthetic();
 
-//canvas context
-const ctx = imageCanvas.getContext("2d");
-
 //Event listeners===========================================================================================================
 
-//when the page is loaded, clear previously uploaded images and custom themes
-window.addEventListener("load", () => {
-    customThemeSelector.value = null;
-    uploadImageSelector.value = null;
-    radioButtons.forEach((radioButton) => {
-        radioButton.checked = false;
-        console.log('resetting radio buttons');
-    });
-    fetch("https://picsum.photos/1000")
-    .then(data => {
-        currentAesthetic.originalImageDataURL = data["url"];
-        putImage();
-        console.log("Random image fetched");
-        //console.log("Data: " , data);
-    })
-})
+window.addEventListener("load", async () => {
+    resetPage();
+
+    //load random picture from picsum third-party API
+    try {
+        let randomImageURL = await fetchRandomImageURL();
+        //let dataURL = await fetchImageDataURL(randomImageURL);
+        currentAesthetic.loadImage(randomImageURL, "originalImage", imageCanvas, canvasContext);
+    } catch (error) {
+        console.error("Error loading page: ", error);
+    }
+});
 
 //button event listener to make image file choice dialog appear
 uploadImageButton.addEventListener("click", (event) => {
     event.preventDefault(); //prevent form from auto submitting
     uploadImageSelector.click();
-    console.log("upload-image clicked");
+    console.log("upload image clicked");
 });
 
 //button event listener to call converter function
 convertImageButton.addEventListener("click", (event) => {
-    if (themeArray.length === 0) {
-        alert("No theme selected!");
-        console.log("conversion failed: no theme selected");
+    if (currentAesthetic.paletteColors.length === 0) {
+        alert("No theme selected! Select a theme and try again.");
+        console.log("No theme selected! Select a theme and try again.");
         return;
     } else {
-        let imageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
-        convertImage(imageData, themeArray);
-        console.log("image conversion called");
+        let imageData = canvasContext.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
+
+        //TODO: make this thing work 
+        imageButtons.classList.add('invisible');
+        imageButtonsLoadingContainer.classList.add('visible');
+        currentAesthetic.convertImage(imageData);
+
+        imageButtons.classList.remove('invisible');
+        imageButtonsLoadingContainer.classList.remove('visible');
     }
 });
 
@@ -80,7 +81,7 @@ downloadImageButton.addEventListener("click", (e) => {
 
 //button event listener to revert image
 undoChangesButton.addEventListener("click", (event) => {
-    putImage(oldImageDataURL);
+    currentAesthetic.loadImage("originalImage", imageCanvas, canvasContext);
 });
 
 //file selector listener to actually do something when an image file is selected
@@ -91,9 +92,11 @@ uploadImageSelector.addEventListener("change", (e) => {
         let reader = new FileReader();
         // file reader event listener
         reader.onload = (event) => {
-            image.src = event.target.result;
-            putImage(); // the something being done
-            console.log(imageURL);
+            // image.src = event.target.result;
+            // putImage(); // the something being done
+            // console.log(imageURL);
+            currentAesthetic.loadImage(event.target.result, "originalImage", imageCanvas, canvasContext);
+            console.log("Image uploaded");
         }
         reader.readAsDataURL(selectedFile);
     }
@@ -103,17 +106,17 @@ uploadImageSelector.addEventListener("change", (e) => {
 //if custom is selected, then make the file picker visible
 radioButtons.forEach( (radioButton) => {
     console.log("adding event listeners");
-    radioButton.addEventListener("change", (e) => {
+    radioButton.addEventListener("change", () => {
         if (radioButton.checked) {
-            let themeName = radioButton.value;
-            console.log("Selected: " + themeName);
-            if (themeName === "custom") {
+            currentAesthetic.paletteName = radioButton.value;
+            console.log("Selected: " + currentAesthetic.paletteName);
+            if (currentAesthetic.paletteName === "custom") {
                 instructionModal.classList.add('visible');
                 customThemeSelectorWrapper.classList.add('visible');
             } else {
                 customThemeSelectorWrapper.classList.remove('visible');
-                themeArray = themes[themeName];
-                putPalette(themeArray);
+                currentAesthetic.paletteColors = themes[currentAesthetic.paletteName];
+                updatePalette();
             }
         }
     });
@@ -127,21 +130,36 @@ modalUnderstood.addEventListener("click", (e) => {
 
 //file selector listener for the custom theme button
 customThemeSelector.addEventListener("change", (e) => {
-    console.log("Files.length: " + customThemeSelector.files.length);
-    console.log(customThemeSelector.files);
+    //TODO: verify file has at least two colors
     console.log('uploading custom theme')
     let selectedFile = e.target.files[0];
     if (selectedFile) {
         let reader = new FileReader();
+        
         reader.onload = (event) => {
             let jsonString = event.target.result;
             try {
-                theme = JSON.parse(jsonString);
-                themeLength = theme.length;
-                console.log(theme);
-                putPalette(theme);
+                let theme = JSON.parse(jsonString);
+                
+                // error checking 
+                if (!(theme["name"] instanceof String)) {
+                    throw new Error("Invalid name! Don't forget the quotes.");
+                } 
+
+                if (!Array.isArray(theme["theme"])) {
+                    throw new Error("Theme is not an array! Pay attention to the example punctuation.");
+                } else if (theme["theme"].length < 2) {
+                    throw new Error("Theme must be 2 or more colors; a single color is just a rectangle!")
+                }
+
+                currentAesthetic.paletteName = theme["name"];
+                currentAesthetic.paletteColors = theme["theme"];
+                updatePalette();
+
             } catch(error) {
                 console.error("Error parsing custom JSON theme: ", error);
+                alert(error);
+                customThemeSelector.value = null;
             }
         } 
         reader.readAsText(selectedFile);
@@ -155,79 +173,70 @@ shareAesethetic.addEventListener("click", (event) => {
 
 //HTML Modifiers===================================================================================================================
 
-//I bet you can guess what this does
-function putImage() {
-    image.src = imageURL;
-    image.crossOrigin = "anonymous";
-    image.onload = () => {
-        imageCanvas.width = image.width;
-        imageCanvas.height = image.height;
-        ctx.drawImage(image, 0, 0);
-    }
-    console.log("image displayed");
+//clears out previous selections
+function resetPage() {
+    customThemeSelector.value = null;
+    uploadImageSelector.value = null;
+    radioButtons.forEach((radioButton) => {
+        radioButton.checked = false;
+    });
+    console.log("page reset");
 }
 
 //remakes the palette to reflect the selected theme
-function putPalette(themeArray) {
+function updatePalette() {
+    const paletteColors = currentAesthetic.paletteColors; // alias for readability
+
     //remove previous palette
     while (palette.firstChild) {
         palette.removeChild(palette.firstChild);
     }
 
     //put new palette
-    for (let i = 0; i < themeArray.length; i++) {
+    for (let i = 0; i < paletteColors.length; i++) {
         const paletteSwatch = document.createElement('div');
         paletteSwatch.classList.add('palette-swatch');
-        paletteSwatch.style.backgroundColor = `rgb(${themeArray[i][0]}, ${themeArray[i][1]}, ${themeArray[i][2]})`;
+        paletteSwatch.style.backgroundColor = `rgb(${paletteColors[i][0]}, ${paletteColors[i][1]}, ${paletteColors[i][2]})`;
         palette.appendChild(paletteSwatch);
     }
 }
 
-//Conversion functions =======================================================================================================
-
-//converts image to the palette colors
-function convertImage(imageData, themeArray){
-    imageButtons.classList.add('invisible');
-    imageButtonsLoadingContainer.classList.add('visible');
-    oldImageDataURL = image.src;
-    let pixels = imageData.data;
-
-    //for each pixel in the image
-    //setTimeout wrapper to allow the DOM to update 
-    setTimeout( () => {
-        for (let i = 0; i < pixels.length; i+=4) {
-            let lens = []; //lens is an array of tuples where [themeArrayIndex (aka j), distanceFromPixel]
-
-            //for each color in theme
-            for (let j = 0; j < themeArray.length; j++) {
-                //3D (euclidean) distance from color -- not particulary great but good enough; other algorithms potentially worth 
-                //implementing in the future
-                let distanceFromPixel = (Math.sqrt(Math.pow(pixels[i]-themeArray[j][0], 2) 
-                                            + Math.pow(pixels[i+1]-themeArray[j][1], 2) 
-                                            + Math.pow(pixels[i+2]-themeArray[j][2], 2)));
-                let lensEntry = [j, distanceFromPixel];
-                lens.push(lensEntry);
-            }
-
-            //sort distances from pixels and find the smallest
-            //sort the array from least to greatest
-            lens.sort((a,b) => a[1]-b[1]);
-
-            let colorNum = lens[0][0]; //this is the index of the closest color to the pixel
-            for (let k = 0; k < 3; k++) {
-                pixels[i+k] = themeArray[colorNum][k];
-            }
-
+// Remote resource request functions
+async function fetchRandomImageURL() {
+    return await fetch("https://picsum.photos/1000")
+    .then( async (response) => {
+        if (!response){
+            throw new Error("Failed to fetch random image url");
         }
-        ctx.putImageData(imageData, 0, 0);
-        image.src = imageCanvas.toDataURL('image/png');
-        imageButtons.classList.remove('invisible');
-        imageButtonsLoadingContainer.classList.remove('visible');
-        console.log("finished conversion (buttons should appear)");
-    }, 0);
-    
+        console.log("Image URL query response: ", response);
+        const blob = await response.blob();
+        return new Promise(async (resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve(reader.result);
+            };
+            reader.readAsDataURL(blob);
+        });
+    })
+    .catch(error => {
+        throw error;
+    })
 }
 
-
-//Other==========================================================================================================================
-
+async function fetchImageDataURL(url) {
+    try {
+        const response = await fetch(url);
+        console.log("Image data query response: ", response);
+        const blob = await response.blob();
+        return new Promise(async (resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve(reader.result);
+            };
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error("Error fetching the image data: ", error);
+        throw error;
+    }
+}
