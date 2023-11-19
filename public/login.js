@@ -18,6 +18,9 @@ loginButton.addEventListener("click", (e) => {
     login(fields['username'], fields['password']);
 });
 
+//hostname for backend -- debugging purposes
+import hostname from './hostname.js';
+
 createNewAccountButton.addEventListener("click", (e) => {
     console.log('create new account button clicked');
     let fields = getTextFromFields();
@@ -40,7 +43,7 @@ function writeToModal(title, text) {
 }
 
 async function login(username, password) {
-    return await fetch('https://simpleaesthetic.carsonandkaitlyn.com/login')
+    return await fetch(`https://${hostname}/login`)
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -58,7 +61,7 @@ async function login(username, password) {
 }
 
 async function createAccount(username, password) {
-    return await fetch('https://simpleaesthetic.carsonandkaitlyn.com/create-account')
+    return await fetch(`https://${hostname}/create-account`)
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);

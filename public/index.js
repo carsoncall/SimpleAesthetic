@@ -1,4 +1,7 @@
-import { themes } from './themes.js'
+import themes from './themes.js'
+//hostname for backend -- debugging purposes
+import hostname from './hostname.js';
+import Aesthetic from './Aesthetic.js'
 
 //page variables
 const imageCanvas = document.getElementById('target-image');
@@ -17,13 +20,10 @@ const uploadImageSelector = document.getElementById('upload-image-selector');
 const radioButtons = document.getElementsByName('theme-button');
 const customThemeSelector = document.getElementById('custom-theme-selector');
 const modalUnderstood = document.getElementById('modal-understood');
+const shareAesethetic = document.getElementById('share-aesthetic');
 
-//global variables
-let image = new Image();
-let imageURL;
-let oldImageDataURL;
-let themeArray = [];
-
+//global variable that holds the current aesthetic
+const currentAesthetic = new Aesthetic();
 
 //canvas context
 const ctx = imageCanvas.getContext("2d");
@@ -40,7 +40,8 @@ window.addEventListener("load", () => {
     });
     fetch("https://picsum.photos/1000")
     .then(data => {
-        putImage(data["url"]);
+        currentAesthetic.originalImageDataURL = data["url"];
+        putImage();
         console.log("Random image fetched");
         //console.log("Data: " , data);
     })
@@ -147,10 +148,15 @@ customThemeSelector.addEventListener("change", (e) => {
     } 
 })
 
+//button event listener for sharing the aesthetic
+shareAesethetic.addEventListener("click", (event) => {
+
+})
+
 //HTML Modifiers===================================================================================================================
 
 //I bet you can guess what this does
-function putImage(imageURL) {
+function putImage() {
     image.src = imageURL;
     image.crossOrigin = "anonymous";
     image.onload = () => {
@@ -185,11 +191,11 @@ function convertImage(imageData, themeArray){
     imageButtonsLoadingContainer.classList.add('visible');
     oldImageDataURL = image.src;
     let pixels = imageData.data;
+
     //for each pixel in the image
     //setTimeout wrapper to allow the DOM to update 
     setTimeout( () => {
         for (let i = 0; i < pixels.length; i+=4) {
-            let minimum = 0;
             let lens = []; //lens is an array of tuples where [themeArrayIndex (aka j), distanceFromPixel]
 
             //for each color in theme
@@ -202,6 +208,7 @@ function convertImage(imageData, themeArray){
                 let lensEntry = [j, distanceFromPixel];
                 lens.push(lensEntry);
             }
+
             //sort distances from pixels and find the smallest
             //sort the array from least to greatest
             lens.sort((a,b) => a[1]-b[1]);
@@ -210,6 +217,7 @@ function convertImage(imageData, themeArray){
             for (let k = 0; k < 3; k++) {
                 pixels[i+k] = themeArray[colorNum][k];
             }
+
         }
         ctx.putImageData(imageData, 0, 0);
         image.src = imageCanvas.toDataURL('image/png');
