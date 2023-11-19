@@ -55,8 +55,20 @@ export default class Aesthetic {
         if (!(imageData instanceof ImageData)) {
             throw new Error("convertImage() failed because the param:imageData was not of type ImageData");
         }
-        this._euclideanDistanceConverter(imageData, canvasContext);
-        this._aestheticImage.src = imageCanvas.toDataURL('image/png');  
+          
+        return new Promise((resolve, reject) => {
+            try {
+                setTimeout(() => {
+                    this._euclideanDistanceConverter(imageData, canvasContext);
+                    this._aestheticImage.addEventListener("load", () => {
+                        resolve();
+                    });
+                    this._aestheticImage.src = imageCanvas.toDataURL('image/png');
+                }, 0);
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     /**

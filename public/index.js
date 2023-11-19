@@ -61,7 +61,7 @@ convertImageButton.addEventListener("click", async () => {
         //TODO: make this thing work 
         imageButtons.classList.add('invisible');
         imageButtonsLoadingContainer.classList.add('visible');
-        currentAesthetic.convertImage(imageData, imageCanvas, canvasContext);
+        await currentAesthetic.convertImage(imageData, imageCanvas, canvasContext);
 
         imageButtons.classList.remove('invisible');
         imageButtonsLoadingContainer.classList.remove('visible');
