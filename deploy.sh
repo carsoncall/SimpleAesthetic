@@ -29,3 +29,4 @@ ENDSSH
 printf "\n----> Copy the distribution package to the target.\n"
 scp -r -i "$key" public/* ubuntu@$hostname:services/$service/public
 scp -i "$key" *.js ubuntu@$hostname:services/$service/
+scp -i "$key" *.json ubuntu@$hostname:services/$service/
