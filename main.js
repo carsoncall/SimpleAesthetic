@@ -1,9 +1,12 @@
 //Express setup
 const express = require('express');
+const cors = require('cors');
+
 const app = express();
 
 //MongoDB setup
 const { MongoClient } = require('mongodb');
+const { ObjectId } = require('mongodb');
 const config = require('./dbConfig.json');
 const { error } = require('console');
 const url = `mongodb+srv://${config["username"]}:${config["password"]}@${config["hostname"]}/?retryWrites=true&w=majority`;
@@ -12,25 +15,32 @@ const aesthetics = client.db('simpleaesthetic').collection('aesthetics');
 const users = client.db('simpleaesthetic').collection('users');
 const sessions = client.db('simpleaesthetic').collection('sessions');
 
-//array of ids of aesthetics that have been already loaded
-const loaded = [];
-
-//MongoDB query options
-const nextAesthetic = { _id: {$nin: loaded}};
-
 // The service port defaults to 4000 or is read from the program arguments
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
 // Text to display for the service name
 const serviceName = process.argv.length > 3 ? process.argv[3] : 'SimpleAesthetic';
 
+//Allow all origins
+app.use(cors());
+
+// Parse JSON bodies
+app.use(express.json());
+
 // Serve up the static content using middleware
 app.use(express.static('public'));
 
 app.get('/next-aesthetic', async (req, res) => {
-  // This returns the number of aesthetics that have not been loaded yet.
   let count = 0;
   res.setHeader('Access-Control-Allow-Origin', '*');
+
+  // If the client has sent a list of loaded aesthetics, use that to filter the query
+  let loaded = req.query.loadedIDs ? JSON.parse(req.query.loadedIDs) : [];
+  
+  // Convert loaded IDs from strings to ObjectIds
+  loaded = loaded.map(id => new ObjectId(id));
+  
+  let nextAesthetic = { _id: {$nin: loaded}}; //queries for documents that have ids NOT in loaded[], which is set by client at each request
 
   //counting documents (to ensure one exists)
   try {
@@ -51,13 +61,12 @@ app.get('/next-aesthetic', async (req, res) => {
   // If a document exists
   try {
     //returns the aesthetic from the cursor which should only have one document. 
-    let aesthetic = await aesthetics.find(nextAesthetic).limit(1).next();
+    let aestheticObject = await aesthetics.find(nextAesthetic).limit(1).next();
 
-    if (aesthetic) {
+    if (aestheticObject) {
       let responseJSOL = {result: "success", 
-                          aesthetic: aesthetic};
+                          "aestheticObject": aestheticObject}; //return the whole object, client will take care of not requesting duplicates
       res.json(responseJSOL);
-      loaded.push(aesthetic['_id']);
     } else {
       let errorString = "something went wrong with pulling an aesthetic fron the db"
       console.error(errorString);
@@ -70,10 +79,11 @@ app.get('/next-aesthetic', async (req, res) => {
   }
 });
 
-app.put('/upload-aesthetic', (req, res) => {
+app.put('/upload-aesthetic', async (req, res) => {
   let newAesthetic = req.body;
+  console.log(req);
   try {
-    aesthetics.insertOne(newAesthetic);
+    await aesthetics.insertOne(newAesthetic);
     res.send({"result": "success"})
   } catch (e) {
     console.error("Error inserting new aesthetic in the database", e);
@@ -83,7 +93,6 @@ app.put('/upload-aesthetic', (req, res) => {
 
 //login token -- without cookies
 app.get('/login', (req, res) => {
-
   res.send({ "result": "Congratulations! You have logged in (db placeholder)"});
 });
 

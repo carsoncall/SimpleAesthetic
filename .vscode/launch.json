@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [   
+
     {
         "console": "integratedTerminal",
         "internalConsoleOptions": "neverOpen",
@@ -29,8 +30,8 @@
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
-            "url": "http://localhost/index.html",
-            "webRoot": "${workspaceFolder}"
+            "url": "http://localhost:4000/index.html",
+            "webRoot": "${workspaceFolder}/public"
         },
         {
             "name": "Attach",

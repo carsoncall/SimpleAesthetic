@@ -19,7 +19,7 @@ loginButton.addEventListener("click", (e) => {
 });
 
 //hostname for backend -- debugging purposes
-import hostname from './hostname.js';
+import hostname from './assets/hostname.js';
 
 createNewAccountButton.addEventListener("click", (e) => {
     console.log('create new account button clicked');

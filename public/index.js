@@ -1,6 +1,6 @@
 import { themes } from './themes.js'
 //hostname for backend -- debugging purposes
-import hostname from './hostname.js';
+import hostname from './assets/hostname.js';
 import Aesthetic from './Aesthetic.js'
 
 //page variables
@@ -168,7 +168,19 @@ customThemeSelector.addEventListener("change", (e) => {
 
 //button event listener for sharing the aesthetic
 shareAesethetic.addEventListener("click", (event) => {
-
+    event.preventDefault();
+    uploadAesthetic()
+    .then(response => {
+        console.log(response);
+        if (response["result"] === "success") {
+            alert("Aesthetic successfully uploaded!");
+        } else {
+            throw new Error("Something went wrong with uploading the aesthetic");
+        }
+    })
+    .catch(error => {
+        console.error("Error uploading aesthetic: ", error);
+    })
 })
 
 //HTML Modifiers===================================================================================================================
@@ -201,7 +213,7 @@ function updatePalette() {
     }
 }
 
-// Remote resource request functions
+// Remote resource fetchers=========================================================================================================
 async function fetchRandomImageURL() {
     return await fetch("https://picsum.photos/1000")
     .then( async (response) => {
@@ -223,20 +235,24 @@ async function fetchRandomImageURL() {
     })
 }
 
-async function fetchImageDataURL(url) {
-    try {
-        const response = await fetch(url);
-        console.log("Image data query response: ", response);
-        const blob = await response.blob();
-        return new Promise(async (resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                resolve(reader.result);
-            };
-            reader.readAsDataURL(blob);
-        });
-    } catch (error) {
-        console.error("Error fetching the image data: ", error);
-        throw error;
-    }
+async function uploadAesthetic() {
+    let aestheticJSONString = JSON.stringify(currentAesthetic);
+    console.log("Uploading the following JSON:", aestheticJSONString);
+    return await fetch(`${hostname}/upload-aesthetic`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: aestheticJSONString
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .catch(error => {
+        console.error("Error uploading aesthetic: ", error);
+    })
+
 }

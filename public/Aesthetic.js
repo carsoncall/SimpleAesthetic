@@ -72,6 +72,36 @@ export default class Aesthetic {
     }
 
     /**
+     * Creates the inner HTML of the card.
+     * @returns {string} the HTML of the card
+     */
+    createCardHTML() {
+        let cardHTML = `<div class="card">
+                            <span id="card-title">${this._aestheticTitle}</span>
+                            <img id="card-image" src="${this._aestheticImage.src}">
+                            <div id="card-palette">
+                                <div class="card-palette-color" id="card-palette-color1" style="background-color: rgb(${this._aestheticProminentColors[0]})">
+                                </div>
+                                <div class="card-palette-color" id="card-palette-color2" style="background-color: rgb(${this._aestheticProminentColors[1]});">
+                                </div>
+                                <div class="card-palette-color" id="card-palette-color3" style="background-color: rgb(${this._aestheticProminentColors[2]});">
+                                </div>
+                                <div class="card-palette-color" id="card-palette-color4" style="background-color: rgb(${this._aestheticProminentColors[3]});">
+                                </div>
+                                <div class="card-palette-color" id="card-palette-color5" style="background-color: rgb(${this._aestheticProminentColors[4]});">
+                                </div>
+                                <div class="card-palette-color" id="card-palette-color6" style="background-color: rgb(${this._aestheticProminentColors[5]});">
+                                </div>
+                                <div class="card-palette-color" id="card-palette-color7" style="background-color: rgb(${this._aestheticProminentColors[6]});">
+                                </div>
+                                <div class="card-palette-color" id="card-palette-color8" style="background-color: rgb(${this._aestheticProminentColors[7]});">
+                                </div>
+                            </div>
+                        </div>`;
+        return cardHTML;
+    }
+
+    /**
      * 3D (euclidean) distance from color -- not particulary great but good enough; other algorithms potentially worth implementing in the future
      * 
      * @param {Uint8ClampedArray} pixels - the pixel values of the image to be converted
@@ -124,7 +154,6 @@ export default class Aesthetic {
         }
     }
 
-
     /**
      * Regular expression for matching data URLs
      * @param {string} dataURL 
@@ -134,13 +163,4 @@ export default class Aesthetic {
         const dataURLPattern = /^data:image\/(?:png|jpeg);base64,([a-zA-Z0-9+/]+={0,2})$/;
         return dataURLPattern.test(dataURL);
     }
-
-    //getters and setters exist for clarity's sake
-
 }
-
-// let image = new Image();
-// let imageURL;
-// let oldImageDataURL;
-// let themeArray = [];
-// let prominentColors = [];

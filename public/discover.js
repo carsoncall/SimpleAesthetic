@@ -3,7 +3,7 @@ const cardContainer = document.getElementById('card-container');
 const loader = document.createElement('div');
 
 //hostname for backend -- debugging purposes
-import hostname from './hostname.js';
+import hostname from './assets/hostname.js';
 
 loader.className = 'card';
 cardContainer.appendChild(loader);
@@ -34,14 +34,13 @@ async function loadCard() {
     }
 
     isLoading = true;
-    fetch(`http://${hostname}/next-aesthetic`)
+    fetch(`${hostname}/next-aesthetic?loadedIDs=${JSON.stringify(loadedCardIDs)}`)
     .then( async response => {
         if (!response.ok) {
             throw new Error(`HTTP Error! Status: ${response.status}`);
         }
         console.log("Response status: ", response.status);
         let responseJSON = await response.json();
-        console.log(responseJSON);
         return responseJSON;
     })
     .then(resultJSON => {
@@ -49,10 +48,11 @@ async function loadCard() {
         console.log(resultJSON);
 
         if (resultJSON["result"] === "success") {
-            const newCard = document.createElement('div');
-            newCard.className = 'card';
-            newCard.innerHTML = resultJSON["aesthetic"];
-            cardContainer.appendChild(newCard);
+            let aestheticObject = resultJSON["aestheticObject"];
+            let aesthetic = aestheticObject["aesthetic"];
+            let aestheticHTML = aesthetic.createCardHTML();
+            cardContainer.appendChild(aestheticHTML);
+            loadedCardIDs.push(resultJSON["aestheticObject"]["_id"]);
         } else if (resultJSON["result"] === "all out") {
             const allOutDiv = document.createElement('div');
             allOutDiv.textContent = "All out of aesthetics to show :)";
