@@ -25,7 +25,7 @@ const serviceName = process.argv.length > 3 ? process.argv[3] : 'SimpleAesthetic
 app.use(cors());
 
 // Parse JSON bodies
-app.use(express.json());
+app.use(express.json({ limit: '50mb'}));
 
 // Serve up the static content using middleware
 app.use(express.static('public'));
@@ -81,7 +81,6 @@ app.get('/next-aesthetic', async (req, res) => {
 
 app.put('/upload-aesthetic', async (req, res) => {
   let newAesthetic = req.body;
-  console.log(req);
   try {
     await aesthetics.insertOne(newAesthetic);
     res.send({"result": "success"})

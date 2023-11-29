@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [   
 
+
     {
         "console": "integratedTerminal",
         "internalConsoleOptions": "neverOpen",
@@ -29,9 +30,8 @@
             "name": "Launch localhost",
             "type": "firefox",
             "request": "launch",
-            "reAttach": true,
             "url": "http://localhost:4000/index.html",
-            "webRoot": "${workspaceFolder}/public"
+            "webRoot": "${workspaceFolder}/public/"
         },
         {
             "name": "Attach",

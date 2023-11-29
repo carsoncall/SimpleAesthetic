@@ -35,7 +35,6 @@ window.addEventListener("load", async () => {
     //load random picture from picsum third-party API
     try {
         let randomImageURL = await fetchRandomImageURL();
-        //let dataURL = await fetchImageDataURL(randomImageURL);
         currentAesthetic.loadImage(randomImageURL, "originalImage", imageCanvas, canvasContext);
     } catch (error) {
         console.error("Error loading page: ", error);
@@ -58,7 +57,6 @@ convertImageButton.addEventListener("click", async () => {
     } else {
         let imageData = canvasContext.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
 
-        //TODO: make this thing work 
         imageButtons.classList.add('invisible');
         imageButtonsLoadingContainer.classList.add('visible');
         await currentAesthetic.convertImage(imageData, imageCanvas, canvasContext);

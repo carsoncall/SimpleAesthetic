@@ -1,9 +1,11 @@
+//hostname for backend -- debugging purposes
+import hostname from './assets/hostname.js';
+
+import Aesthetic from './Aesthetic.js';
+
 //page variables
 const cardContainer = document.getElementById('card-container');
 const loader = document.createElement('div');
-
-//hostname for backend -- debugging purposes
-import hostname from './assets/hostname.js';
 
 loader.className = 'card';
 cardContainer.appendChild(loader);
@@ -45,11 +47,11 @@ async function loadCard() {
     })
     .then(resultJSON => {
         loader.remove();
-        console.log(resultJSON);
+        console.log("Discover::loadCard() result: ", resultJSON);
 
         if (resultJSON["result"] === "success") {
             let aestheticObject = resultJSON["aestheticObject"];
-            let aesthetic = aestheticObject["aesthetic"];
+            let aesthetic = new Aesthetic(aestheticObject);
             let aestheticHTML = aesthetic.createCardHTML();
             cardContainer.appendChild(aestheticHTML);
             loadedCardIDs.push(resultJSON["aestheticObject"]["_id"]);
