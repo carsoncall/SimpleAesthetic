@@ -1,6 +1,7 @@
 //Express setup
 const express = require('express');
 const cors = require('cors');
+const crypto = require('crypto');
 
 const app = express();
 
@@ -21,7 +22,7 @@ const port = process.argv.length > 2 ? process.argv[2] : 4000;
 // Text to display for the service name
 const serviceName = process.argv.length > 3 ? process.argv[3] : 'SimpleAesthetic';
 
-//Allow all origins
+//Allow all origins -- TODO: verify this is safe
 app.use(cors());
 
 // Parse JSON bodies
@@ -30,6 +31,12 @@ app.use(express.json({ limit: '50mb'}));
 // Serve up the static content using middleware
 app.use(express.static('public'));
 
+//Sessions
+const currentSessions = {};
+
+//** ROUTES **//
+
+// Get the next aesthetic from the database. Called with the infinite scroll function in discover.js.
 app.get('/next-aesthetic', async (req, res) => {
   let count = 0;
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -50,14 +57,12 @@ app.get('/next-aesthetic', async (req, res) => {
     res.status(500).send({"result": "error"});
     return;
   }
-
   // if no more documents exist to send
   if (count === 0) {
     //there are none left
     res.send({"result": "all out"});
     return;
   } 
-  
   // If a document exists
   try {
     //returns the aesthetic from the cursor which should only have one document. 
@@ -79,24 +84,76 @@ app.get('/next-aesthetic', async (req, res) => {
   }
 });
 
+
+// Upload a new aesthetic to the database. Called with the upload button in index.js. Must be logged in.
 app.put('/upload-aesthetic', async (req, res) => {
-  let newAesthetic = req.body;
-  try {
-    await aesthetics.insertOne(newAesthetic);
-    res.send({"result": "success"})
-  } catch (e) {
-    console.error("Error inserting new aesthetic in the database", e);
-    res.send({"result": "fail","error": e});
+  let sessionToken = req.headers.sessiontoken;
+  if (currentSessions.hasOwnProperty(sessionToken)) {
+    let newAesthetic = req.body;
+    try {
+      let result = await aesthetics.insertOne(newAesthetic);
+      let newAestheticID = result.insertedId;
+      updateAestheticsIDs(currentSessions[sessionToken], newAestheticID);
+      res.send({"result": "success"})
+    } catch (e) {
+      console.error("Error inserting new aesthetic in the database", e);
+      res.send({"result": "fail","error": e});
+    }
+  } else {
+    console.error("Error: session token not found. Please log in again.");
+    res.send({"result": "error", "error": "session token not found. Please log in again."});
   }
 });
 
-//login token -- without cookies
+
+//login, and receive a session token. Called with the login button in login.js. Uses express-session.
 app.get('/login', (req, res) => {
-  res.send({ "result": "Congratulations! You have logged in (db placeholder)"});
+  const {username, password} = req.headers;
+  if (username && password) { // if the user has provided a username and password
+    //check the database for a matching username and password
+    users.findOne({"username": username, "password": password})
+    .then(result => {
+      if (result) { // if the username and password match
+        //create a session for the user
+        const sessionToken = sessionTokenGenerator();
+        currentSessions[sessionToken] = username;
+        res.send({"result": "success", "sessionToken": sessionToken});
+      } else { // if the username and password do not match
+        res.send({"result": "error", "error": "username and password do not match. Try again!"});
+      }
+    })
+    .catch(error => {
+      console.error("Error finding user in database", error);
+      res.send({"result": "error", "error": error});
+    });
+  } else {
+    res.send({"result": "error", "error": "username and password required"});
+  }
 });
 
-app.get('/create-account', (req, res) => {
-  res.send({ "result": "Congratulations! You have logged in (db placeholder)"});
+app.put('/create-account', async (req, res) => {
+  const { username, password } = req.body;
+  if (username && password) { // if the user has provided a username and password
+    
+    if (await users.findOne({"username": username})) { // if the username is already taken
+      res.json({"result": "error", "error": "username already taken"});
+    } 
+    else { // if the username is not taken, create the document to insert into the database
+      const user = {username: username, 
+                    password: password,
+                    aestheticsIDs: []};
+      try {
+        await users.insertOne(user);
+        res.json({"result": "success"});
+      } catch (e) {
+        console.error("Error creating account", e);
+        res.json({"result": "error", "error": e});
+      }
+    }
+
+  } else {
+    res.json({"result": "error", "error": "username and password required"});
+  }
 })
 
 // Provide the version of the application
@@ -112,3 +169,24 @@ app.use((_req, res) => {
 app.listen(port, function () {
   console.log(`Listening on port ${port}`);
 });
+
+/**
+ * Generates a random session token
+ * @returns {string} A random session token
+ */
+function sessionTokenGenerator() {
+  return crypto.randomBytes(16).toString('hex');
+}
+
+/**
+ * Updates the user's document in the database with the new aesthetic's ID
+ * @param {string} username The username of the user to update
+ * @param {string} aestheticID The ID of the new aesthetic
+ */
+function updateAestheticsIDs(username, aestheticID) {
+  try {
+    users.updateOne({"username": username}, {$push: {"aestheticsIDs": aestheticID}});
+  } catch (e) {
+    console.error("Error updating user's aestheticsIDs", e);
+  }
+}

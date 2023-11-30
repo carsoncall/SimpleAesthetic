@@ -43,7 +43,14 @@ function writeToModal(title, text) {
 }
 
 async function login(username, password) {
-    return await fetch(`https://${hostname}/login`)
+    return await fetch(`${hostname}/login`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'username': username,
+            'password': password
+        }
+    })
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -52,16 +59,29 @@ async function login(username, password) {
     })
     .then(data => {
         console.log("Login data from server: ", data);
-        writeToModal(data["result"], `username: ${username}, password: not telling ;)`);
+        if (data["result"] === "success") {
+            writeToModal(data["result"], `${username} has successfully logged in`);
+            if (!sessionStorage.getItem('sessionToken')) {
+                sessionStorage.setItem('sessionToken', data["sessionToken"]);
+            }
+        } else if (data["result"] === "error") {
+            writeToModal(data["result"], `The server sent back the following error: ${data["error"]}`);
+        }
         instructionModal.classList.add('visible');
     })
     .catch(error => {
-        console.error('Login failed: ', error);
+        console.log('Login failed: ', error);
     });
 }
 
 async function createAccount(username, password) {
-    return await fetch(`https://${hostname}/create-account`)
+    return await fetch(`${hostname}/create-account`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({username: username, password: password})
+        })
     .then(response => {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -70,10 +90,14 @@ async function createAccount(username, password) {
     })
     .then (data => {
         console.log("Account Creation data from server: ", data);
-        writeToModal(data["result"], `username: ${username}, password: not telling ;)`);
+        if (data["result"] === "success") {
+            writeToModal(data["result"], `${username}'s account has been created!`);
+        } else if (data["result"] === "error") {
+            writeToModal(data["result"], `The server sent back the following error: ${data["error"]}`);
+        }
         instructionModal.classList.add('visible');
     })
     .catch(error => {
-        console.error('Login failed: ', error);
+        console.error('Account creation failed: ', error);
     });
 }

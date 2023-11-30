@@ -24,6 +24,9 @@ const customThemeSelector = document.getElementById('custom-theme-selector');
 const modalUnderstood = document.getElementById('modal-understood');
 const shareAesethetic = document.getElementById('share-aesthetic');
 
+//text field variables
+const aestheticTitleInput = document.getElementById('aesthetic-title-input');
+
 //global variable that holds the current aesthetic
 const currentAesthetic = new Aesthetic();
 
@@ -167,18 +170,23 @@ customThemeSelector.addEventListener("change", (e) => {
 //button event listener for sharing the aesthetic
 shareAesethetic.addEventListener("click", (event) => {
     event.preventDefault();
-    uploadAesthetic()
-    .then(response => {
-        console.log(response);
-        if (response["result"] === "success") {
-            alert("Aesthetic successfully uploaded!");
-        } else {
-            throw new Error("Something went wrong with uploading the aesthetic");
-        }
-    })
-    .catch(error => {
-        console.error("Error uploading aesthetic: ", error);
-    })
+    currentAesthetic.aestheticTitle = aestheticTitleInput.value;
+    if (sessionStorage.getItem('sessionToken')) {
+        uploadAesthetic()
+            .then(response => {
+                console.log(response);
+                if (response["result"] === "success") {
+                    alert("Aesthetic successfully uploaded!");
+                } else {
+                    throw new Error("Something went wrong with uploading the aesthetic");
+                }
+            })
+            .catch(error => {
+                console.error("Error uploading aesthetic: ", error);
+            })
+    } else {
+        alert("You must be logged in to share an aesthetic!");
+    }
 })
 
 //HTML Modifiers===================================================================================================================
@@ -239,7 +247,8 @@ async function uploadAesthetic() {
     return await fetch(`${hostname}/upload-aesthetic`, {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'sessionToken': sessionStorage.getItem('sessionToken')
         },
         body: aestheticJSONString
     })
@@ -249,8 +258,15 @@ async function uploadAesthetic() {
         }
         return response.json();
     })
+    .then(data => {
+        if (data["result"] === "success") {
+            alert("Aesthetic successfully uploaded!");
+        } else if (data["result"] === "error") {
+            alert(`The server sent back the following error: ${data["error"]}`);
+        }
+    })
     .catch(error => {
         console.error("Error uploading aesthetic: ", error);
-    })
+    });
 
 }

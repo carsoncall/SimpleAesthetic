@@ -168,6 +168,19 @@ div#palette {
     justify-content: center;
 }
 
+/* #aesthetic-title.invisible {
+    display: none;
+} */
+
+#aesthetic-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1em;
+    font-weight: bold;
+}
+
 #share-aesthetic {
     background-color: rgb(170,170,170);
     color: black;

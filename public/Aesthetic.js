@@ -10,14 +10,14 @@ export default class Aesthetic {
             this.paletteName = data.paletteName;
             this.paletteColors = data.paletteColors;
             this._aestheticProminentColors = data._aestheticProminentColors;
-            this._aestheticTitle = data._aestheticTitle;
+            this.aestheticTitle = data.aestheticTitle;
         } else {
             this._originalImage = new ImageInfo();
             this._aestheticImage = new ImageInfo();
             this.paletteName = "";
             this.paletteColors = [];
             this._aestheticProminentColors = [];
-            this._aestheticTitle = "";
+            this.aestheticTitle = "";
         }
     }
 
@@ -96,7 +96,7 @@ export default class Aesthetic {
         let card = document.createElement('div');
         card.classList.add('card');
         let cardHTML = `
-                        <span id="card-title">${this._aestheticTitle}</span>
+                        <span id="card-title">${this.aestheticTitle}</span>
                         <img id="card-image" src="${this._aestheticImage.src}">
                         <div id="card-palette">
                             <div class="card-palette-color" id="card-palette-color1" style="background-color: rgb(${this._aestheticProminentColors[0]})">
@@ -169,7 +169,7 @@ export default class Aesthetic {
         this.paletteName = "";
         this.paletteColors = [];
         this._aestheticProminentColors = [];
-        this._aestheticTitle = "";
+        this.aestheticTitle = "";
 
         try {
             drawImage(imageCanvas, canvasContext, this._originalImage.src);
