@@ -66,3 +66,19 @@ Note that any text on the pages that is enclosed in two asterisks represents a p
 - Called a third-party endpoint to provide random images every time you load the page.
 - Backend endpoints give placeholder data that is visible as such on the frontend. 
 - Implemented calls to backend in the frontend code using the fetch API.
+
+### DB deliverable ###
+- Created a MongoDB database on Atlas
+- Backend properly sends and requests data from the database for the appropriate endpoints 
+- Data is properly stored and updated in the database
+
+### Login deliverable ###
+- Implemented the **Create Account** function
+- Implemented the **Login** function
+    - includes cryptographically-generated session tokens
+    - does not include any persistent storage on the client
+    - Note: for true privacy/security, encrypted passwords will be necessary in the future
+- Uploaded Aesthetics are saved under the uploader's user account
+    - Also implemented a title function for the uploaded aesthetics
+- User accounts are saved in MongoDB
+- Users can only upload Aesthetics if they are logged in
