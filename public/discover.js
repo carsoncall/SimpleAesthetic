@@ -1,39 +1,44 @@
 //hostname for backend -- debugging purposes
 import hostname from './assets/hostname.js';
-
 import Aesthetic from './Aesthetic.js';
 
 //page variables
 const cardContainer = document.getElementById('card-container');
 const loader = document.createElement('div');
 
-loader.className = 'card';
-cardContainer.appendChild(loader);
-loader.textContent = 'Loading...';
-
 let isLoading = false;
 let loadedCardIDs = [];
 let allOut = false;
-let loadThreshold = 1000; //this is the number of pixels from the bottom that the user is before the next card loads
+let websocket;
 
-// //event listeners 
-// cardContainer.addEventListener("scroll", () => {
-//     const scrollHeight = cardContainer.scrollHeight;
-//     const scrollTop = cardContainer.scrollTop;
-//     const clientHeight = cardContainer.clientHeight;
-
-//     if (scrollHeight - scrollTop <= clientHeight + loadThreshold
-//         && !allOut) {
-//         loadCard();
-//     }
-// });
 const sentinel = document.createElement('div');
 sentinel.innerHTML = "Loading...";
 cardContainer.appendChild(sentinel);
 
+function configureWebSocket() {
+    const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
+    let socket = new WebSocket(`${protocol}://${window.location.host}/ws`);
+    socket.onopen = (event) => {
+        console.log("WebSocket connection opened");
+        websocket = socket;
+        loadCard();
+    };
+    socket.onclose = (event) => {
+        console.log("WebSocket connection closed");
+    };
+    socket.onmessage = async (event) => {
+        let nextAesthetic = JSON.parse(await event.data);
+        console.log("WebSocket message received: ", nextAesthetic);
+        putCard(nextAesthetic);
+    };
+    return socket;
+  }
+configureWebSocket();
+
+
 const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
-        if (entry.isIntersecting && !allOut) {
+        if (entry.isIntersecting && !allOut && websocket) {
             console.log("Loading next card");
             loadCard();
         } else {
@@ -44,28 +49,29 @@ const observer = new IntersectionObserver(entries => {
 
 observer.observe(sentinel);
 
-async function loadCard() {
-    if (isLoading){
-        cardContainer.appendChild(loader);
+function loadCard() {
+    if (isLoading) {
         console.log("Already loading");
         return;
-    }
-
-    isLoading = true;
-    observer.unobserve(sentinel); // stop observing sentinel while loading
-    fetch(`${hostname}/next-aesthetic?loadedIDs=${JSON.stringify(loadedCardIDs)}`)
-    .then( async response => {
-        if (!response.ok) {
-            throw new Error(`HTTP Error! Status: ${response.status}`);
+    } else {
+        isLoading = true;
+        observer.unobserve(sentinel); // stop observing sentinel while loading
+        console.log("sending message");
+        try {
+            websocket.send(JSON.stringify({req: "next-aesthetic", loadedIDs: loadedCardIDs}));
+        } catch (e) {
+            console.log("Error sending message", e);
         }
-        console.log("Response status: ", response.status);
-        let responseJSON = await response.json();
-        return responseJSON;
-    })
-    .then(resultJSON => {
-        loader.remove();
-        console.log("Discover::loadCard() result: ", resultJSON);
+        
+    }
+}
 
+/**
+ *  Takes the response JSON from the backend and creates a new card in the card container.
+ *  @param {JSON} resultJSON the JSON response from the backend
+ * */
+function putCard(resultJSON) {
+    try {
         if (resultJSON["result"] === "success") {
             let aestheticObject = resultJSON["aestheticObject"];
             let aesthetic = new Aesthetic(aestheticObject);
@@ -85,15 +91,11 @@ async function loadCard() {
         } else {
             throw new Error("God only knows what happened");
         }
-    })
-    .catch(error => {
-        console.log("Error loading new card", error);
-    })
-    .finally(() => {
+    } catch (e) {
+        console.log("Error loading new card", e);
+    } finally {
         isLoading = false;
         console.log("isLoading: ", isLoading);
         observer.observe(sentinel); // start observing sentinel again
-    });
+    };
 }
-
-loadCard(); 

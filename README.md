@@ -82,3 +82,9 @@ Note that any text on the pages that is enclosed in two asterisks represents a p
     - Also implemented a title function for the uploaded aesthetics
 - User accounts are saved in MongoDB
 - Users can only upload Aesthetics if they are logged in
+
+### Websocket Deliverable
+- Backend listens for WebSocket connections
+- Frontend makes WebSocket connections
+- Backend requests data from DB and sends it over WebSocket when needed
+- WebSocket data is displayed in the Discover page as an infinite scroll

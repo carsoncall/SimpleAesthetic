@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
+const { peerProxy } = require('./peerProxy');
 
 const app = express();
 
@@ -14,24 +15,14 @@ const url = `mongodb+srv://${config["username"]}:${config["password"]}@${config[
 const client = new MongoClient(url);
 const aesthetics = client.db('simpleaesthetic').collection('aesthetics');
 const users = client.db('simpleaesthetic').collection('users');
-const sessions = client.db('simpleaesthetic').collection('sessions');
 
-// The service port defaults to 4000 or is read from the program arguments
-const port = process.argv.length > 2 ? process.argv[2] : 4000;
+const port = process.argv.length > 2 ? process.argv[2] : 4000; // The service port defaults to 4000 or is read from the program arguments
+const serviceName = process.argv.length > 3 ? process.argv[3] : 'SimpleAesthetic'; // Text to display for the service name
 
-// Text to display for the service name
-const serviceName = process.argv.length > 3 ? process.argv[3] : 'SimpleAesthetic';
+app.use(cors()); //Allow all origins -- TODO: verify this is safe
+app.use(express.json({ limit: '50mb'})); // Parse JSON bodies
+app.use(express.static('public')); // Serve up the static content using middleware
 
-//Allow all origins -- TODO: verify this is safe
-app.use(cors());
-
-// Parse JSON bodies
-app.use(express.json({ limit: '50mb'}));
-
-// Serve up the static content using middleware
-app.use(express.static('public'));
-
-//Sessions
 const currentSessions = {};
 
 //** ROUTES **//
@@ -165,9 +156,13 @@ app.use((_req, res) => {
   res.sendFile('index.html', { root: 'public' });
 });
 
-app.listen(port, function () {
+const webserver = app.listen(port, function () {
   console.log(`Listening on port ${port}`);
 });
+
+peerProxy(webserver);
+
+//** HELPER FUNCTIONS **//
 
 /**
  * Generates a random session token
