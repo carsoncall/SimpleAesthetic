@@ -39,8 +39,7 @@ const currentSessions = {};
 // Get the next aesthetic from the database. Called with the infinite scroll function in discover.js.
 app.get('/next-aesthetic', async (req, res) => {
   let count = 0;
-  res.setHeader('Access-Control-Allow-Origin', '*');
-
+  
   // If the client has sent a list of loaded aesthetics, use that to filter the query
   let loaded = req.query.loadedIDs ? JSON.parse(req.query.loadedIDs) : [];
   

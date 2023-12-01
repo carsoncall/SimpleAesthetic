@@ -29,30 +29,35 @@ const aestheticTitleInput = document.getElementById('aesthetic-title-input');
 
 //global variable that holds the current aesthetic
 const currentAesthetic = new Aesthetic();
+let reload = true;
 
 //Event listeners===========================================================================================================
 
 window.addEventListener("load", async () => {
-    resetPage();
+    if (reload) {
+        resetPage();
 
-    //load random picture from picsum third-party API
-    try {
-        let randomImageURL = await fetchRandomImageURL();
-        currentAesthetic.loadImage(randomImageURL, "originalImage", imageCanvas, canvasContext);
-    } catch (error) {
-        console.error("Error loading page: ", error);
+        //load random picture from picsum third-party API
+        try {
+            let randomImageURL = await fetchRandomImageURL();
+            currentAesthetic.loadImage(randomImageURL, "originalImage", imageCanvas, canvasContext);
+        } catch (error) {
+            console.error("Error loading page: ", error);
+        }
     }
 });
 
 //button event listener to make image file choice dialog appear
 uploadImageButton.addEventListener("click", (event) => {
     event.preventDefault(); //prevent form from auto submitting
+    reload = false;
     uploadImageSelector.click();
     console.log("upload image clicked");
 });
 
 //button event listener to call converter function
 convertImageButton.addEventListener("click", async () => {
+    reload = false;
     if (currentAesthetic.paletteColors.length === 0) {
         alert("No theme selected! Select a theme and try again.");
         console.log("No theme selected! Select a theme and try again.");
