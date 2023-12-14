@@ -1,6 +1,6 @@
 //hostname for backend -- debugging purposes
 import hostname from './assets/hostname.js';
-import Aesthetic from './Aesthetic.js';
+import Aesthetic from '../assets/Aesthetic.js';
 
 //page variables
 const cardContainer = document.getElementById('card-container');
