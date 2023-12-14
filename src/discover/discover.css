@@ -1,0 +1,75 @@
+#card-container {
+    height: 90vh;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.card {
+    display: grid;
+    border: 2px solid rgb(170,170,170);
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: repeat(10,1fr);
+    border-radius: 10px;
+    max-width: 500px;
+    max-height: 300px;
+}
+
+#card-title {
+    grid-row: 1;
+    grid-column: 1/6;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+#card-image {
+    grid-row: 2 / 11;
+    grid-column: 1 / 5;
+    width: 100%;
+    height: 100%;
+    border-bottom-left-radius: 5px;
+}
+
+#card-palette {
+    grid-row: 2/11;
+    grid-column: 5;
+    display: grid;
+    grid-template-rows: repeat(8, 1fr);
+    grid-template-columns: 1fr;
+    width: 100%;
+    height: 100%;
+}
+
+#card-palette-color {
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+}
+
+#card-palette-color1 {
+    grid-row: 1;  
+}
+#card-palette-color2 {
+    grid-row: 2;
+}
+#card-palette-color3 {
+    grid-row: 3;
+}
+#card-palette-color4 {
+    grid-row: 4;
+}
+#card-palette-color5 {
+    grid-row: 5;
+}
+#card-palette-color6 {
+    grid-row: 6;
+}
+#card-palette-color7 {
+    grid-row: 7;
+}
+#card-palette-color8 {
+    grid-row: 8;
+    border-bottom-right-radius: 9px;
+}

@@ -2,7 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
-const { peerProxy } = require('./peerProxy');
+const { peerProxy } = require('./peerProxy.cjs');
 
 const app = express();
 
