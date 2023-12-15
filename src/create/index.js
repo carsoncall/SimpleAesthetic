@@ -38,12 +38,7 @@ window.addEventListener("load", async () => {
         resetPage();
 
         //load random picture from picsum third-party API
-        try {
-            let randomImageURL = await fetchRandomImageURL();
-            currentAesthetic.loadImage(randomImageURL, "originalImage", imageCanvas, canvasContext);
-        } catch (error) {
-            console.error("Error loading page: ", error);
-        }
+        
     }
 });
 
@@ -51,8 +46,7 @@ window.addEventListener("load", async () => {
 uploadImageButton.addEventListener("click", (event) => {
     event.preventDefault(); //prevent form from auto submitting
     reload = false;
-    uploadImageSelector.click();
-    console.log("upload image clicked");
+    
 });
 
 //button event listener to call converter function
@@ -224,54 +218,5 @@ function updatePalette() {
     }
 }
 
-// Remote resource fetchers=========================================================================================================
-async function fetchRandomImageURL() {
-    return await fetch("https://picsum.photos/1000")
-    .then( async (response) => {
-        if (!response){
-            throw new Error("Failed to fetch random image url");
-        }
-        console.log("Image URL query response: ", response);
-        const blob = await response.blob();
-        return new Promise(async (resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                resolve(reader.result);
-            };
-            reader.readAsDataURL(blob);
-        });
-    })
-    .catch(error => {
-        throw error;
-    })
-}
 
-async function uploadAesthetic() {
-    let aestheticJSONString = JSON.stringify(currentAesthetic);
-    console.log("Uploading the following JSON:", aestheticJSONString);
-    return await fetch(`${hostname}/upload-aesthetic`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'sessionToken': sessionStorage.getItem('sessionToken')
-        },
-        body: aestheticJSONString
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data["result"] === "success") {
-            alert("Aesthetic successfully uploaded!");
-        } else if (data["result"] === "error") {
-            alert(`The server sent back the following error: ${data["error"]}`);
-        }
-    })
-    .catch(error => {
-        console.error("Error uploading aesthetic: ", error);
-    });
 
-}
