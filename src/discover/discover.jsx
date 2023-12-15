@@ -12,7 +12,7 @@ export default function Discover() {
   function configureWebSocket() {
     return new Promise((resolve, reject) => {
       const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
-      let socket = new WebSocket(`${protocol}://localhost:4000/ws`); //TODO: replace with ${window.location.host}
+      let socket = new WebSocket(`${protocol}://${window.location.host}/ws`); //TODO: replace with ${window.location.host}
 
       socket.onopen = () => {
         console.log("WebSocket connection opened");

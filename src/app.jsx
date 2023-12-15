@@ -30,7 +30,7 @@ export default function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/discover' element={<Discover />} />
           <Route path='/create' element={<Create />} />
-          <Route path='*' element={<NotFound />} />
+          <Route path='*' element={<Create/>} />
         </Routes>
 
         <Navbar bg="dark" variant="dark" className="footer">
