@@ -150,11 +150,11 @@ export default function Create() {
   }, []);
 
   function setTitle(event) {
-    aesthetic.current.title = event.target.value;
+    aesthetic.current.aestheticTitle = event.target.value;
   }
 
   function uploadAestheticHandler() {
-    if (!aesthetic.current.title) {
+    if (!aesthetic.current.aestheticTitle) {
       alert("You must give your aesthetic a title!");
       return;
     }
