@@ -1,21 +1,20 @@
 #!/bin/bash
 
-while getopts k:h:s: flag
+while getopts h:s: flag
 do
     case "${flag}" in
-        k) key=${OPTARG};;
         h) hostname=${OPTARG};;
         s) service=${OPTARG};;
     esac
 done
 
-if [[ -z "$key" || -z "$hostname" || -z "$service" ]]; then
+if [[ -z "$hostname" || -z "$service" ]]; then
     printf "\nMissing required parameter.\n"
-    printf "  syntax: deployFiles.sh -k <pem key file> -h <hostname> -s <service>\n\n"
+    printf "  syntax: deployFiles.sh -h <hostname> -s <service>\n\n"
     exit 1
 fi
 
-printf "\n----> Deploying files for $service to $hostname with $key\n"
+printf "\n----> Deploying files for $service to $hostname\n"
 
 # Step 1
 printf "\n----> Build the distribution package\n"
@@ -29,23 +28,22 @@ cp service/*.json build
 
 # Step 2
 printf "\n----> Clear out the previous distribution on the target.\n"
-ssh -i "$key" ubuntu@$hostname << ENDSSH
+ssh root@$hostname << ENDSSH
 rm -rf services/${service}
 mkdir -p services/${service}
 ENDSSH
 
 # Step 3
 printf "\n----> Copy the distribution package to the target.\n"
-scp -r -i "$key" build/* ubuntu@$hostname:services/$service/
-scp -r -i "$key" package.json ubuntu@$hostname:services/$service/
+scp -r build/* root@$hostname:services/$service/
+scp -r package.json root@$hostname:services/$service/
 
 # Step 4
 printf "\n----> Deploy the service on the target\n"
-ssh -i "$key" ubuntu@$hostname << ENDSSH
-bash -i
+ssh root@$hostname << ENDSSH
 cd services/${service}
 npm install
-pm2 restart ${service}
+systemctl restart ${service}
 ENDSSH
 
 # Step 5

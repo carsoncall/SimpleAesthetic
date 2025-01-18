@@ -16,7 +16,7 @@ const client = new MongoClient(url);
 const aesthetics = client.db('simpleaesthetic').collection('aesthetics');
 const users = client.db('simpleaesthetic').collection('users');
 
-const port = process.argv.length > 2 ? process.argv[2] : 4000; // The service port defaults to 4000 or is read from the program arguments
+const port = process.argv.length > 2 ? process.argv[2] : 3000; // The service port defaults to 4000 or is read from the program arguments
 const serviceName = process.argv.length > 3 ? process.argv[3] : 'SimpleAesthetic'; // Text to display for the service name
 
 app.use(cors()); //Allow all origins -- TODO: verify this is safe
@@ -29,10 +29,12 @@ const currentSessions = {};
 
 // Get the next aesthetic from the database. Called with the infinite scroll function in discover.js.
 app.get('/next-aesthetic', async (req, res) => {
+  console.log('Received request for /next-aesthetic');
   let count = 0;
   
   // If the client has sent a list of loaded aesthetics, use that to filter the query
   let loaded = req.query.loadedIDs ? JSON.parse(req.query.loadedIDs) : [];
+  console.log('Loaded IDs:', loaded);
   
   // Convert loaded IDs from strings to ObjectIds
   loaded = loaded.map(id => new ObjectId(id));
@@ -42,6 +44,7 @@ app.get('/next-aesthetic', async (req, res) => {
   //counting documents (to ensure one exists)
   try {
     count = await aesthetics.countDocuments(nextAesthetic);
+    console.log('Count of next aesthetics:', count);
   } catch (e) {
     console.error("Error counting DB documents", e);
     res.status(500).send({"result": "error"});
@@ -50,6 +53,7 @@ app.get('/next-aesthetic', async (req, res) => {
   // if no more documents exist to send
   if (count === 0) {
     //there are none left
+    console.log('No more aesthetics to send');
     res.send({"result": "all out"});
     return;
   } 
@@ -57,6 +61,7 @@ app.get('/next-aesthetic', async (req, res) => {
   try {
     //returns the aesthetic from the cursor which should only have one document. 
     let aestheticObject = await aesthetics.find(nextAesthetic).limit(1).next();
+    console.log('Fetched aesthetic object:', aestheticObject);
 
     if (aestheticObject) {
       let responseJSOL = {result: "success", 
@@ -77,12 +82,16 @@ app.get('/next-aesthetic', async (req, res) => {
 
 // Upload a new aesthetic to the database. Called with the upload button in index.js. Must be logged in.
 app.put('/upload-aesthetic', async (req, res) => {
+  console.log('Received request for /upload-aesthetic');
   let sessionToken = req.headers.sessiontoken;
+  console.log('Session token:', sessionToken);
   if (currentSessions.hasOwnProperty(sessionToken)) {
     let newAesthetic = req.body;
+    console.log('New aesthetic:', newAesthetic);
     try {
       let result = await aesthetics.insertOne(newAesthetic);
       let newAestheticID = result.insertedId;
+      console.log('Inserted new aesthetic with ID:', newAestheticID);
       updateAestheticsIDs(currentSessions[sessionToken], newAestheticID);
       res.send({"result": "success"})
     } catch (e) {
@@ -98,7 +107,9 @@ app.put('/upload-aesthetic', async (req, res) => {
 
 //login, and receive a session token. Called with the login button in login.js. Uses express-session.
 app.get('/login', (req, res) => {
+  console.log('Received request for /login');
   const {username, password} = req.headers;
+  console.log('Username:', username);
   if (username && password) { // if the user has provided a username and password
     //check the database for a matching username and password
     users.findOne({"username": username, "password": password})
@@ -106,9 +117,11 @@ app.get('/login', (req, res) => {
       if (result) { // if the username and password match
         //create a session for the user
         const sessionToken = sessionTokenGenerator();
+        console.log('Generated session token:', sessionToken);
         currentSessions[sessionToken] = username;
         res.send({"result": "success", "sessionToken": sessionToken});
       } else { // if the username and password do not match
+        console.log('Username and password do not match');
         res.send({"result": "error", "error": "username and password do not match. Try again!"});
       }
     })
@@ -117,15 +130,19 @@ app.get('/login', (req, res) => {
       res.send({"result": "error", "error": error});
     });
   } else {
+    console.log('Username and password required');
     res.send({"result": "error", "error": "username and password required"});
   }
 });
 
 app.put('/create-account', async (req, res) => {
+  console.log('Received request for /create-account');
   const { username, password } = req.body;
+  console.log('Username:', username);
   if (username && password) { // if the user has provided a username and password
     
     if (await users.findOne({"username": username})) { // if the username is already taken
+      console.log('Username already taken');
       res.json({"result": "error", "error": "username already taken"});
     } 
     else { // if the username is not taken, create the document to insert into the database
@@ -134,6 +151,7 @@ app.put('/create-account', async (req, res) => {
                     aestheticsIDs: []};
       try {
         await users.insertOne(user);
+        console.log('Account created for username:', username);
         res.json({"result": "success"});
       } catch (e) {
         console.error("Error creating account", e);
@@ -142,17 +160,20 @@ app.put('/create-account', async (req, res) => {
     }
 
   } else {
+    console.log('Username and password required');
     res.json({"result": "error", "error": "username and password required"});
   }
 })
 
 // Provide the version of the application
 app.get('/config', (_req, res) => {
+  console.log('Received request for /config');
   res.send({ version: '20231128.075705.1', name: serviceName });
 });
 
 // Return the homepage if the path is unknown
 app.use((_req, res) => {
+  console.log('Unknown path, returning homepage');
   res.sendFile('index.html', { root: 'public' });
 });
 
@@ -160,6 +181,7 @@ const webserver = app.listen(port, function () {
   console.log(`Listening on port ${port}`);
 });
 
+console.log("Starting proxy")
 peerProxy(webserver);
 
 //** HELPER FUNCTIONS **//
@@ -178,6 +200,7 @@ function sessionTokenGenerator() {
  * @param {string} aestheticID The ID of the new aesthetic
  */
 function updateAestheticsIDs(username, aestheticID) {
+  console.log(`Updating aesthetics IDs for user: ${username} with new aesthetic ID: ${aestheticID}`);
   try {
     users.updateOne({"username": username}, {$push: {"aestheticsIDs": aestheticID}});
   } catch (e) {
